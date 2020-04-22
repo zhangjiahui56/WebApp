@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="show_file_view">
+<img src="{{url_for('static', filename='uploads/images/'+image_link)}}" style=" width: 200px; height: 250px;"/>
+</div>
+{% endblock %}

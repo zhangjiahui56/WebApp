@@ -1,0 +1,166 @@
+from flask import render_template, flash, redirect, session, url_for, request, g
+from flask_login import login_user, logout_user, current_user, login_required
+from app import app, db, login_manager
+from werkzeug.security import check_password_hash, generate_password_hash
+from werkzeug.utils import secure_filename
+import datetime
+import os
+import functools
+from .forms import *
+from .models import User
+
+def login_required(view):
+    @functools.wraps(view)
+    def wrapped_view(**kwargs):
+        if g.user is None:
+            return redirect(url_for('login'))
+
+        return view(**kwargs)
+
+    return wrapped_view
+
+def admin_required(view):
+    @functools.wraps(view)
+    def wrapped_view(**kwargs):
+        if g.user.is_admin == 0:
+            return redirect(url_for('login'))
+
+        return view(**kwargs)
+
+    return wrapped_view
+
+def check_login(view):
+    @functools.wraps(view)
+    def wrapped_view(**kwargs):
+        if g.user is not None:
+            return redirect(url_for('index'))
+
+        return view(**kwargs)
+
+    return wrapped_view
+
+@app.route('/')
+@app.route('/index')
+@login_required
+def index():
+    user = {'nickname': 'Miguel'}  # fake user
+    posts = [  # fake array of posts
+        {
+            'author': {'nickname': 'John'},
+            'body': 'Beautiful day in Portland!'
+        },
+        {
+            'author': {'nickname': 'Susan'},
+            'body': 'The Avengers movie was so cool!'
+        }
+    ]
+    return render_template('index.html',
+                           title='Home',
+                           user=user,
+                           posts=posts)
+
+@app.route('/register', methods=('GET', 'POST'))
+def register():
+    form = RegisterForm()
+    if form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
+        name = form.name.data
+        user = User.query.filter_by(username=form.username.data).first()
+        error = None
+
+        if user is not None:
+            error = 'User {} is already registered.'.format(username)
+
+        if error is None:
+            u = User(username=username, password=generate_password_hash(password), name=name, timestamp=datetime.datetime.utcnow())
+            db.session.add(u)
+            db.session.commit()
+            flash('You are now registered and can log in', 'success')
+            return redirect(url_for('login'))
+        flash(error, 'danger')
+
+    return render_template('register.html', form = form)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(user_id)
+
+@app.route('/login', methods=['GET', 'POST'])
+@check_login
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        error = None
+        user = User.query.filter_by(username=form.username.data).first()
+        if user is None:
+            error = 'Incorrect username.'
+        elif not check_password_hash(user.password, form.password.data):
+            error = 'Incorrect password.'
+
+        if error is None:
+            login_user(user, remember=form.remember_me.data)
+            flash('Logged in successfully.', 'success')
+            return redirect(url_for('index'))
+        flash(error, 'danger')
+    return render_template('login.html', form=form)
+
+@app.before_request
+def load_logged_in_user():
+    if current_user.is_authenticated:
+        g.user = load_user(current_user.get_id())
+    else:
+        g.user = None
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
+
+""" upload image """
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+
+import numpy as np
+# def leaf_predict(image):
+#     image = preprocess_image(image)
+#     pre = model.predict(np.expand_dims(image, axis=0))
+#     return pre
+
+def time_now():
+    return datetime.datetime.now().strftime('%m%d%Y%H%M%S%f')
+
+def create_filename(filename):
+    name = filename.rsplit('.', 1)[0]
+    file_format = filename.rsplit('.', 1)[1]
+    return time_now() + '_' + name + '.' + file_format
+
+@app.route('/images', methods=['GET'])
+def upload_file():
+    return render_template('upload_images.html')
+
+@app.route('/images/results', methods=['POST'])
+
+def uploaded_file():
+    # check if the post request has the file part
+    if 'file' not in request.files:
+        flash('No file part', 'danger')
+        return redirect(url_for('upload_file'))
+    file = request.files['file']
+    # if user does not select file, browser also
+    # submit an empty part without filename
+    if file.filename == '':
+        flash('No selected file', 'danger')
+        return redirect(url_for('upload_file'))
+    if allowed_file(file.filename) == 0:
+        flash('Invalid file, please choose png, jpg or jpeg file', 'danger')
+        return redirect(url_for('upload_file'))
+    if file:
+        filename = secure_filename(file.filename)
+        # leaf_pred = leaf_predict(file)
+        newname = create_filename(filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], newname))
+        return render_template('results.html', image_link=newname)
+    return render_template('upload_images.html')
