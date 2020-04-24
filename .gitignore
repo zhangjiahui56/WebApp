@@ -1,7 +1,7 @@
 # Project exclude paths
 /venv/
 .idea
-.gitignore
+#.gitignore
 /app/static/uploads
 /app/static/img
 db_repository
@@ -9,3 +9,6 @@ db_repository
 /LeafCounting/data
 /LeafCounting/metrics
 /LeafCounting/model_weighs
+LeafCounting/__pycache__/
+__pycache__/
+app/__pycache__/
