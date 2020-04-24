@@ -1,37 +1,3 @@
-<nav class="navbar navbar-default">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="{{url_for('index')}}">MyFlaskApp</a>
-        </div>
-        <div id="navbar" class="collapse navbar-collapse">
-          <ul class="nav navbar-nav">
-            <li><a href="{{url_for('index')}}">Home</a></li>
-            <li><a href="">About</a></li>
-            <li><a href="">Articles</a></li>
-          </ul>
-
-          <ul class="nav navbar-nav navbar-right">
-            {% if g.user %}
-              <li><a href="">Dashboard</a></li>
-              <li><a href="{{ url_for('logout') }}">Logout</a></li>
-            {% else %}
-              <li><a href="{{ url_for('register') }}">Register</a></li>
-              <li><a href="{{ url_for('login') }}">Login</a></li>
-            {% endif %}
-
-          </ul>
-        </div><!--/.nav-collapse -->
-      </div>
-    </nav>
-
-
-
 <!-- ##### Header Area Start ##### -->
   <header class="header-area">
 
@@ -43,16 +9,40 @@
                       <div class="top-header-content d-flex align-items-center justify-content-between">
                           <!-- Top Header Content -->
                           <div class="top-header-meta">
-                              <a href="#" data-toggle="tooltip" data-placement="bottom" title="infodeercreative@gmail.com"><i class="fa fa-envelope-o" aria-hidden="true"></i> <span>Email: infodeercreative@gmail.com</span></a>
-                              <a href="#" data-toggle="tooltip" data-placement="bottom" title="+1 234 122 122"><i class="fa fa-phone" aria-hidden="true"></i> <span>Call Us: +1 234 122 122</span></a>
+                              <a href="#" data-toggle="tooltip" ><i class="fa fa-envelope-o" aria-hidden="true"></i> <span>Email: infodeercreative@gmail.com</span></a>
+                              <a href="#" data-toggle="tooltip" ><i class="fa fa-phone" aria-hidden="true"></i> <span>Call Us: +1 234 122 122</span></a>
                           </div>
 
                           <!-- Top Header Content -->
                           <div class="top-header-meta d-flex">
                               <!-- Login -->
-                              <div class="login">
+                              {% if g.user %}
+                              <li class="nav-item dropdown no-arrow">
+                                  <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                      <i class="fa fa-user" aria-hidden="true"></i>
+                                      <span class="mr-2 d-none d-lg-inline text-gray-600">{{g.user.name}}</span>
+                                  </a>
+                                  <!-- Dropdown - User Information -->
+                                  <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+                                    <a class="dropdown-item" href="#" style="color: #212529;">
+                                      <i class="fa fa-user" aria-hidden="true"></i>
+                                      Profile
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="{{ url_for('logout') }}" style="color: #212529;">
+                                      <i class="fa fa-sign-out fa-sm fa-fw mr-2 text-gray-400"></i>
+                                      Logout
+                                    </a>
+                                  </div>
+                                </li>
+                              {% else %}
+                                <div class="login">
+                                  <a href="{{ url_for('register') }}"><i class="fa fa-user" aria-hidden="true"></i> <span>Register</span></a>
+                                </div>
+                                <div class="login">
                                   <a href="{{ url_for('login') }}"><i class="fa fa-user" aria-hidden="true"></i> <span>Login</span></a>
-                              </div>
+                                </div>
+                              {% endif %}
                           </div>
                       </div>
                   </div>
@@ -68,7 +58,7 @@
                   <nav class="classy-navbar justify-content-between" id="alazeaNav">
 
                       <!-- Nav Brand -->
-                      <a href="index.html" class="nav-brand"><img src="{{url_for('static', filename='img/core-img/logo.png')}}" alt=""></a>
+                      <a href="{{url_for('index')}}" class="nav-brand"><img src="{{url_for('static', filename='img/core-img/logo.png')}}" alt=""></a>
 
                       <!-- Navbar Toggler -->
                       <div class="classy-navbar-toggler">
