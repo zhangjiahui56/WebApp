@@ -100,7 +100,7 @@ def login():
 
         if error is None:
             login_user(user, remember=form.remember_me.data)
-            flash('Logged in successfully.', 'success')
+            # flash('Logged in successfully.', 'success')
             return redirect(url_for('index'))
         flash(error, 'danger')
     return render_template('login.html', form=form)
