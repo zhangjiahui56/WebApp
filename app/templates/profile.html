@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="breadcrumb-area">
+        <!-- Top Breadcrumb Area -->
+        <div class="top-breadcrumb-area bg-img bg-overlay d-flex align-items-center justify-content-center" style="background-image: url(../static/img/bg-img/24.jpg);">
+            <h2>Profile</h2>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{{url_for('index')}}"><i class="fa fa-home"></i> Home</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Profile</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% include "/includes/_messages.html" %}
+<div class="container">
+    <h1 align="center">Profile</h1>
+  	<hr>
+        {% from "/includes/_formhelpers.html" import render_field %}
+        <form class="form-horizontal" role="form" action="" method="post">
+            {{ form.hidden_tag() }}
+          <div class="form-group">
+            <label class="col-md-4 control-label">Username:</label>
+            <div class="col-md-6">
+                {{render_field(form.username, type="text", class="form-control", style="font-size: 1.5rem;", value=user.username)}}
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-md-4 control-label">Name:</label>
+            <div class="col-md-6">
+                {{render_field(form.name, type="text", class="form-control", style="font-size: 1.5rem;", value=user.name)}}
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-md-4 control-label">Password:</label>
+            <div class="col-md-6">
+                {{render_field(form.password, type="password", class="form-control", style="font-size: 1.5rem;")}}
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-md-4 control-label">Confirm password:</label>
+            <div class="col-md-6">
+                {{render_field(form.confirm, type="password", class="form-control", style="font-size: 1.5rem;")}}
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-md-4 control-label"></label>
+            <div class="col-md-6">
+                <button type="submit" class="btn btn-primary" value="Save Changes" style="font-size: 1.5rem;">Save Changes</button>
+              <span></span>
+              <input type="reset" class="btn btn-default" value="Cancel" style="font-size: 1.5rem;">
+            </div>
+          </div>
+        </form>
+      </div>
+
+<hr>
+
+{% endblock %}

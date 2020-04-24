@@ -17,7 +17,6 @@
                           <div class="top-header-meta d-flex">
                               <!-- Login -->
                               {% if g.user %}
-                              <li class="nav-item dropdown no-arrow">
                                   <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                       <i class="fa fa-user" aria-hidden="true"></i>
                                       <span class="mr-2 d-none d-lg-inline text-gray-600">{{g.user.name}}</span>
@@ -34,7 +33,6 @@
                                       Logout
                                     </a>
                                   </div>
-                                </li>
                               {% else %}
                                 <div class="login">
                                   <a href="{{ url_for('register') }}"><i class="fa fa-user" aria-hidden="true"></i> <span>Register</span></a>

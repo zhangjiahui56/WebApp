@@ -164,3 +164,23 @@ def uploaded_file():
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], newname))
         return render_template('results.html', image_link=newname)
     return render_template('upload_images.html')
+
+@app.route('/profile/<int:id>', methods=['GET', 'POST'])
+
+def edit_profile(id):
+    form = RegisterForm()
+    user = load_user(id)
+    if user is None:
+        flash('User not exist.', 'danger')
+        return redirect(url_for('index'))
+
+
+    if form.validate_on_submit():
+        print(form.username.data, form.name.data, form.password.data, form.confirm.data)
+
+        user.name = form.name.data
+        user.password = generate_password_hash(form.password.data)
+        db.session.commit()
+        flash('Edit user successfully!', 'success')
+
+    return render_template('profile.html', form=form, user=user)
