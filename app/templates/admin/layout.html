@@ -19,6 +19,8 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   <!-- Custom styles for this template -->
   <link href="{{ url_for('static', filename='sb-admin-2.min.css') }}" rel="stylesheet">
+  <link rel="icon" href="{{url_for('static', filename='img/core-img/favicon.ico')}}">
+  <link rel="stylesheet" href="{{url_for('static', filename='preloader.css')}}">
 
   <!-- Custom styles for this page -->
   <link href="{{ url_for('static', filename='dataTables.bootstrap4.min.css') }}" rel="stylesheet">
@@ -28,6 +30,7 @@
 </head>
 
 <body id="page-top">
+{% include './includes/_preloader.html' %}
 {% block content %}{% endblock %}
 
 <!-- Bootstrap core JavaScript-->
@@ -45,4 +48,5 @@
 
 <!-- Page level custom scripts -->
 <script src="{{url_for('static', filename='datatables-demo.js')}}"></script>
+<script src="{{url_for('static', filename='js/active.js')}}"></script>
 </body>

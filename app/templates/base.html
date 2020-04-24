@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
     <link rel="stylesheet" href="{{url_for('static', filename='upload-images.css')}}">
+    <link rel="icon" href="{{url_for('static', filename='img/core-img/favicon.ico')}}">
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
@@ -26,5 +27,18 @@
     {% include 'includes/_navbar.html' %}
     {% include 'includes/_messages.html' %}
     {% block content %}{% endblock %}
+
+    {% include 'includes/_preloader.html' %}
+    <!-- ##### All Javascript Files ##### -->
+    <!-- jQuery-2.2.4 js -->
+    <script src="{{url_for('static', filename='js/jquery/jquery-2.2.4.min.js')}}"></script>
+    <!-- Popper js -->
+    <script src="{{url_for('static', filename='js/bootstrap/popper.min.js')}}"></script>
+    <!-- Bootstrap js -->
+    <script src="{{url_for('static', filename='js/bootstrap/bootstrap.min.js')}}"></script>
+    <!-- All Plugins js -->
+    <script src="{{url_for('static', filename='js/plugins/plugins.js')}}"></script>
+    <!-- Active js -->
+    <script src="{{url_for('static', filename='js/active.js')}}"></script>
   </body>
 </html>

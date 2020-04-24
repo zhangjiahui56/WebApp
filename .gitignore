@@ -1,0 +1,11 @@
+# Project exclude paths
+/venv/
+.idea
+.gitignore
+/app/static/uploads
+/app/static/img
+db_repository
+/LeafCounting/.ipynb_checkpoints
+/LeafCounting/data
+/LeafCounting/metrics
+/LeafCounting/model_weighs
