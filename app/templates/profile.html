@@ -1,24 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="breadcrumb-area">
-        <!-- Top Breadcrumb Area -->
-        <div class="top-breadcrumb-area bg-img bg-overlay d-flex align-items-center justify-content-center" style="background-image: url(../static/img/bg-img/24.jpg);">
-            <h2>Profile</h2>
-        </div>
-
-        <div class="container">
-            <div class="row">
-                <div class="col-12">
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{url_for('index')}}"><i class="fa fa-home"></i> Home</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">Profile</li>
-                        </ol>
-                    </nav>
-                </div>
-            </div>
-        </div>
-    </div>
+{% with title="Profile" %}
+{% include 'includes/_mini_slide.html' %}
+{% endwith %}
 
 {% include "/includes/_messages.html" %}
 <div class="container">
@@ -30,38 +14,47 @@
           <div class="form-group">
             <label class="col-md-4 control-label">Username:</label>
             <div class="col-md-6">
-                {{render_field(form.username, type="text", class="form-control", style="font-size: 1.5rem;", value=user.username)}}
+                <input type="text" class="form-control" value={{user.username}} style="font-size: 1.5rem;" disabled>
             </div>
           </div>
           <div class="form-group">
             <label class="col-md-4 control-label">Name:</label>
             <div class="col-md-6">
-                {{render_field(form.name, type="text", class="form-control", style="font-size: 1.5rem;", value=user.name)}}
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-md-4 control-label">Password:</label>
-            <div class="col-md-6">
-                {{render_field(form.password, type="password", class="form-control", style="font-size: 1.5rem;")}}
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-md-4 control-label">Confirm password:</label>
-            <div class="col-md-6">
-                {{render_field(form.confirm, type="password", class="form-control", style="font-size: 1.5rem;")}}
+                {{render_field(form.name, type="text", id="name", class="form-control", style="font-size: 1.5rem;", value=user.name, disabled="disabled")}}
             </div>
           </div>
           <div class="form-group">
             <label class="col-md-4 control-label"></label>
-            <div class="col-md-6">
-                <button type="submit" class="btn btn-primary" value="Save Changes" style="font-size: 1.5rem;">Save Changes</button>
-              <span></span>
-              <input type="reset" class="btn btn-default" value="Cancel" style="font-size: 1.5rem;">
+            <div class="col-md-6" id="submit-div">
+                <input type="reset" id="edit" class="btn btn-primary" value="Edit Profile" style="font-size: 1.5rem;">
+
+
             </div>
           </div>
         </form>
       </div>
 
 <hr>
+
+<script>
+    $("#edit").click(function(e){
+        var name = $("#name").val();
+        $("#name").removeAttr("disabled");
+        $("#submit-div").append('<button type="submit" id="edit-submit" class="btn btn-primary" value="Save Changes" style="font-size: 1.5rem;">Save Changes</button>');
+        $("#submit-div").append('<span id="edit-span"> </span>');
+        $("#submit-div").append('<input type="reset" id="edit-cancel" class="btn btn-secondary" value="Cancel" style="font-size: 1.5rem;">');
+        $("#submit-div").find('#edit').hide();
+        $("#edit-cancel").click(function() {
+            $("#name").val(name);
+            $("#name").attr('disabled', true);
+            $("#submit-div").find('#edit-submit').remove();
+            $("#submit-div").find('#edit-span').remove();
+            $("#submit-div").find('#edit-cancel').remove();
+            $("#submit-div").find('#edit').show();
+        });
+    });
+
+
+</script>
 
 {% endblock %}

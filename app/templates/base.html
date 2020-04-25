@@ -25,9 +25,9 @@
   </head>
   <body>
     {% include 'includes/_navbar.html' %}
-    {% block content %}{% endblock %}
-
     {% include 'includes/_preloader.html' %}
+    {% block content %}{% endblock %}
+    {% include 'includes/_footer.html' %}
     <!-- ##### All Javascript Files ##### -->
     <!-- jQuery-2.2.4 js -->
     <script src="{{url_for('static', filename='js/jquery/jquery-2.2.4.min.js')}}"></script>

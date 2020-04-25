@@ -168,19 +168,36 @@ def uploaded_file():
 @app.route('/profile/<int:id>', methods=['GET', 'POST'])
 
 def edit_profile(id):
-    form = RegisterForm()
+    form = EditProfileForm()
     user = load_user(id)
     if user is None:
         flash('User not exist.', 'danger')
         return redirect(url_for('index'))
 
-
     if form.validate_on_submit():
-        print(form.username.data, form.name.data, form.password.data, form.confirm.data)
-
         user.name = form.name.data
-        user.password = generate_password_hash(form.password.data)
         db.session.commit()
         flash('Edit user successfully!', 'success')
+        return redirect(url_for('edit_profile', id=user.id))
 
     return render_template('profile.html', form=form, user=user)
+
+@app.route('/change_password/<int:id>', methods=['GET', 'POST'])
+
+def change_password(id):
+    form = ChangePassword()
+    user = load_user(id)
+    if user is None:
+        flash('User not exist.', 'danger')
+        return redirect(url_for('index'))
+
+    if form.validate_on_submit():
+        if not check_password_hash(user.password, form.old_password.data):
+            flash('Password is not correct', 'danger')
+            return redirect(url_for('change_password', id=user.id))
+        user.password = generate_password_hash(form.password.data)
+        db.session.commit()
+        flash('Change password successfully!', 'success')
+        return redirect(url_for('change_password', id=user.id))
+
+    return render_template('change_password.html', form=form, user=user)
