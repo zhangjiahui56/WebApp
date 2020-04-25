@@ -23,12 +23,12 @@
                                   </a>
                                   <!-- Dropdown - User Information -->
                                   <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-                                    <a class="dropdown-item" href="{{url_for('edit_profile', id=g.user.id)}}" style="color: #212529;">
-                                      <i class="fa fa-user " aria-hidden="true"></i>
-                                      Profile
+                                    <a class="dropdown-item" href="{{url_for('edit_profile', id=g.user.id)}}" style="color: #212529;display: block;">
+                                      <i class="fa fa-user" aria-hidden="true"></i>
+                                        Profile
                                     </a>
-                                      <a class="dropdown-item" href="{{url_for('change_password', id=g.user.id)}}" style="color: #212529;display: block;" >
-                                      <i class="fa fa-cogs" aria-hidden="true"></i>
+                                    <a class="dropdown-item" href="{{url_for('change_password', id=g.user.id)}}" style="color: #212529;display: block;" >
+                                      <i class="fa fa-lock" aria-hidden="true"></i>
                                       Change Password
                                     </a>
 <!--                                    <a class="dropdown-item" href="#" style="color: #212529;">-->
@@ -36,8 +36,8 @@
 <!--                                      Password-->
 <!--                                    </a>-->
                                     <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="{{ url_for('logout') }}" style="color: #212529;">
-                                      <i class="fa fa-sign-out fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    <a class="dropdown-item" href="{{ url_for('logout') }}" style="color: #212529;display: block;">
+                                      <i class="fa fa-sign-out"></i>
                                       Logout
                                     </a>
                                   </div>

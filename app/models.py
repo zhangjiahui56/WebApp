@@ -5,6 +5,8 @@ class User(db.Model):
     username = db.Column(db.Text, index=True, unique=True)
     password = db.Column(db.Text)
     name = db.Column(db.Text)
+    address = db.Column(db.Text)
+    phone_number = db.Column(db.String(20))
     is_admin = db.Column(db.Integer, default=0)
     timestamp = db.Column(db.DateTime)
     # posts = db.relationship('Post', backref='author', lazy='dynamic')

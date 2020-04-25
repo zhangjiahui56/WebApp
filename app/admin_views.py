@@ -41,6 +41,8 @@ def edit_user():
             return redirect(url_for('admin.show_users'))
 
         user.name = form.name.data
+        user.address = form.address.data
+        user.phone_number = form.phone_number.data
         user.password = generate_password_hash(form.password.data)
         user.is_admin = form.is_admin.data
         db.session.commit()

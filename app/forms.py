@@ -1,5 +1,8 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, BooleanField, TextAreaField, PasswordField, validators, RadioField, HiddenField
+from wtforms.fields.html5 import TelField
+
+phone_number_regexp = '^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$'
 
 class LoginForm(FlaskForm):
     username = StringField('Username', [validators.DataRequired()])
@@ -9,6 +12,9 @@ class LoginForm(FlaskForm):
 class RegisterForm(FlaskForm):
     username = StringField('Username', [validators.DataRequired(),validators.Length(min=4, max=100)])
     name = StringField('Name', [validators.DataRequired(), validators.Length(min=3, max=50)])
+    address = StringField('Adress', [validators.DataRequired()])
+    phone_number = TelField('Phone Number', [validators.DataRequired(),
+                                             validators.Regexp(phone_number_regexp, message='Invalid Phone Number')])
     password = PasswordField('Password', [
         validators.DataRequired(),
         validators.Length(min=6, max=50),
@@ -22,6 +28,9 @@ class AdminEditForm(RegisterForm):
 
 class EditProfileForm(FlaskForm):
     name = StringField('Name', [validators.DataRequired(), validators.Length(min=3, max=50)])
+    address = StringField('Adress', [validators.DataRequired()])
+    phone_number = TelField('Phone Number', [validators.DataRequired(),
+                                             validators.Regexp(phone_number_regexp, message='Invalid Phone Number')])
 
 class ChangePassword(FlaskForm):
     old_password = PasswordField('Password', [validators.DataRequired()])

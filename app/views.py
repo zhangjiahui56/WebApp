@@ -43,21 +43,7 @@ def check_login(view):
 @app.route('/index')
 @login_required
 def index():
-    user = {'nickname': 'Miguel'}  # fake user
-    posts = [  # fake array of posts
-        {
-            'author': {'nickname': 'John'},
-            'body': 'Beautiful day in Portland!'
-        },
-        {
-            'author': {'nickname': 'Susan'},
-            'body': 'The Avengers movie was so cool!'
-        }
-    ]
-    return render_template('index.html',
-                           title='Home',
-                           user=user,
-                           posts=posts)
+    return render_template('index.html')
 
 @app.route('/register', methods=('GET', 'POST'))
 def register():
@@ -66,6 +52,8 @@ def register():
         username = form.username.data
         password = form.password.data
         name = form.name.data
+        address = form.address.data
+        phone_number = form.phone_number.data
         user = User.query.filter_by(username=form.username.data).first()
         error = None
 
@@ -73,7 +61,7 @@ def register():
             error = 'User {} is already registered.'.format(username)
 
         if error is None:
-            u = User(username=username, password=generate_password_hash(password), name=name, timestamp=datetime.datetime.utcnow())
+            u = User(username=username, password=generate_password_hash(password), name=name, address=address, phone_number=phone_number, timestamp=datetime.datetime.utcnow())
             db.session.add(u)
             db.session.commit()
             flash('You are now registered and can log in', 'success')
@@ -176,6 +164,8 @@ def edit_profile(id):
 
     if form.validate_on_submit():
         user.name = form.name.data
+        user.address = form.address.data
+        user.phone_number = form.phone_number.data
         db.session.commit()
         flash('Edit user successfully!', 'success')
         return redirect(url_for('edit_profile', id=user.id))
