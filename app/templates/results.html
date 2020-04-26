@@ -1,6 +1,29 @@
 {% extends "base.html" %}
 
 {% block content %}
+<!-- mini slide -->
+<div class="breadcrumb-area">
+    <!-- Top Breadcrumb Area -->
+    <div class="top-breadcrumb-area bg-img bg-overlay d-flex align-items-center justify-content-center" style="background-image: url(../static/img/bg-img/24.jpg);">
+        <h2>Image Results</h2>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{{url_for('index')}}"><i class="fa fa-home"></i> Home</a></li>
+                        <li class="breadcrumb-item active"><a href="{{url_for('upload_file')}}"> Upload Images</a></li>
+                        <li class="breadcrumb-item active" aria-current="page"> Image Results</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end mini slide -->
+
 <div class="show_file_view">
 <img src="{{url_for('static', filename='uploads/images/'+image_link)}}" style=" width: 200px; height: 250px;"/>
 </div>

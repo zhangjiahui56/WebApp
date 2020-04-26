@@ -130,7 +130,6 @@ def upload_file():
     return render_template('upload_images.html')
 
 @app.route('/images/results', methods=['POST'])
-
 def uploaded_file():
     # check if the post request has the file part
     if 'file' not in request.files:
@@ -151,7 +150,8 @@ def uploaded_file():
         newname = create_filename(filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], newname))
         return render_template('results.html', image_link=newname)
-    return render_template('upload_images.html')
+
+    return redirect(url_for('upload_file'))
 
 @app.route('/profile/<int:id>', methods=['GET', 'POST'])
 
