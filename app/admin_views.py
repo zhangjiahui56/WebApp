@@ -6,6 +6,7 @@ from .forms import *
 from .models import User
 from .views import load_user
 from wtforms.fields import SelectField
+import datetime
 
 bp = Blueprint('admin', __name__, url_prefix='/admin')
 
@@ -17,9 +18,10 @@ def admin_index():
 
 @bp.route('/users')
 def show_users():
-    form = AdminEditForm()
+    add_form = AdminAddForm()
+    edit_form = AdminEditForm()
     users = User.query.all()
-    return render_template('admin/users_list.html', users = users, form=form)
+    return render_template('admin/users_list.html', users = users, add_form=add_form, edit_form=edit_form)
 
 @bp.route('/user/<int:id>/delete', methods=['GET', 'POST'])
 def delete_user(id):
@@ -27,6 +29,30 @@ def delete_user(id):
     db.session.delete(user)
     db.session.commit()
     flash('User deleted successfully!', 'success')
+    return redirect(url_for('admin.show_users'))
+
+@bp.route('/users/add', methods=['POST'])
+def add_user():
+    form = AdminAddForm()
+    if form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
+        name = form.name.data
+        address = form.address.data
+        phone_number = form.phone_number.data
+        is_admin = form.is_admin.data
+        user = User.query.filter_by(username=username).first()
+
+        if user is not None:
+            error = 'User {} is already registered.'.format(username)
+            flash(error, 'danger')
+            return redirect(url_for('admin.show_users'))
+
+        u = User(username=username, password=generate_password_hash(password), name=name, address=address, phone_number=phone_number, is_admin=is_admin, timestamp=datetime.datetime.utcnow())
+        db.session.add(u)
+        db.session.commit()
+        flash('Add user successfully!', 'success')
+
     return redirect(url_for('admin.show_users'))
 
 @bp.route('/user/edit', methods=['POST'])

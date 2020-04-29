@@ -95,22 +95,14 @@ class CVPPPDataset(Dataset):
 def train_val_test_split(X, Y):
     x_train_val, x_test, y_train_val, y_test = train_test_split(X, Y, test_size=0.2, train_size=0.8)
     x_train, x_val, y_train, y_val = train_test_split(x_train_val, y_train_val, test_size=0.25, train_size=0.75)
-    return (x_train, x_test, x_val, y_train, y_test, y_val)
+    return (x_train, x_val, x_test, y_train, y_val, y_test)
 
 if __name__ == "__main__":
-    D = CVPPPDataset("E:/Dataset",folders=[1,2,5])
+    D = CVPPPDataset("E:/Dataset",folders=[1,2,3,5])
     (x, y) = D.load_data(new_size=(240,240))
 
-    # for i in range(x.shape[0]):
-    #     x[i] = extract_leaf(x[i])
+    (x_train, x_val, x_test, y_train, y_val, y_test) = train_val_test_split(x, y)
+    # x_train, x_test, y_train, y_test  = train_test_split(x, y, test_size=0.2, train_size=0.8)
 
-    # (x_train, x_test, x_val, y_train, y_test, y_val) = train_val_test_split(x, y)
-    x_train, x_test, y_train, y_test  = train_test_split(x, y, test_size=0.2, train_size=0.8)
-    # print(x_train.shape)
-    # print(x_val.shape)
-    # print(x_test.shape)
-    # print(y_train.shape)
-    # print(y_val.shape)
-    # print(y_test.shape)
-    np.savez('data_125.npz', data=(x_train, x_test, y_train, y_test))
+    np.savez('data/dataset.npz', data=(x_train, x_val, x_test, y_train, y_val, y_test))
 

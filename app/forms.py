@@ -21,6 +21,8 @@ class RegisterForm(FlaskForm):
         validators.EqualTo('confirm', message='Passwords do not match')
     ])
     confirm = PasswordField('Confirm Password', [validators.DataRequired()])
+class AdminAddForm(RegisterForm):
+    is_admin = RadioField('Role', choices=[('0', 'User'), ('1', 'Admin')], default=0)
 
 class AdminEditForm(RegisterForm):
     user_id = HiddenField()
