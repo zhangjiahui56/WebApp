@@ -87,11 +87,16 @@ def save_loss(filename, loss):
     for ls in loss:
         f.write("%s\n" % ls)
 
-# preprocess input image
-def preprocess_image(filename, size):
+def load_image(filename, size):
     img = Image.open(filename)
     img = img.resize(size)
     image = np.asarray(img)[:, :, 0:3]
+
+    return image
+
+# preprocess input image
+def preprocess_image(filename, size):
+    image = load_image(filename, size)
     image = preprocess_input(image)
 
     return image
