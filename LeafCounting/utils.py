@@ -87,7 +87,7 @@ def save_loss(filename, loss):
     for ls in loss:
         f.write("%s\n" % ls)
 
-def load_image(filename, size):
+def load_image(filename, size=(240, 240)):
     img = Image.open(filename)
     img = img.resize(size)
     image = np.asarray(img)[:, :, 0:3]
