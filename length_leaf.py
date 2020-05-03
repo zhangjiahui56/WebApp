@@ -30,7 +30,7 @@ def draw_centroid(np_image):
     else:
         print('Invalid image!')
 
-def find_countor(np_image):
+def find_contours(np_image):
     leaf_image, leaf_mask = extract_leaf(np_image)
     edges = cv2.Canny(leaf_mask, 100, 1200)
     edges_pixels = []
@@ -52,7 +52,7 @@ def calculate_max_distance(centroid, pixels, coef_x=1, coef_y=1):
     return max_length, tip
 
 def calculate_max_length_leaf(np_image, coef_x=1, coef_y=1):
-    contour_pixels = find_countor(np_image)
+    contour_pixels = find_contours(np_image)
     centroid = find_centroid(np_image)
     if centroid[0] < 0 or centroid[1] < 0:
         return 0
@@ -61,7 +61,7 @@ def calculate_max_length_leaf(np_image, coef_x=1, coef_y=1):
 
 def draw_centroid2tip(np_image, coef_x=1, coef_y=1):
     draw_image = np_image.copy()
-    contour_pixels = find_countor(np_image)
+    contour_pixels = find_contours(np_image)
     centroid = find_centroid(np_image)
     max_length_leaf, tip = calculate_max_distance(centroid, contour_pixels, coef_x, coef_y)
     if centroid[0] >= 0 and centroid[1] >= 0:
@@ -76,6 +76,6 @@ def length_leaf(filename, coef_x=1, coef_y=1):
     max_length_leaf = calculate_max_length_leaf(image, coef_x, coef_y)
     return max_length_leaf
 
-# def draw_length_leaf(filename, coef_x=1, coef_y=1):
-#     image = load_image(filename, default_size)
-#     draw_centroid2tip(image, coef_x, coef_y)
+def draw_length_leaf(filename, coef_x=1, coef_y=1):
+    image = load_image(filename, default_size)
+    draw_centroid2tip(image, coef_x, coef_y)
