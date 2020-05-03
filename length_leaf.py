@@ -76,6 +76,6 @@ def length_leaf(filename, coef_x=1, coef_y=1):
     max_length_leaf = calculate_max_length_leaf(image, coef_x, coef_y)
     return max_length_leaf
 
-def draw_length_leaf(filename, coef_x=1, coef_y=1):
-    image = load_image(filename, default_size)
-    draw_centroid2tip(image, coef_x, coef_y)
+# def draw_length_leaf(filename, coef_x=1, coef_y=1):
+#     image = load_image(filename, default_size)
+#     draw_centroid2tip(image, coef_x, coef_y)
