@@ -43,13 +43,13 @@ def find_contours(np_image):
 def calculate_max_distance(centroid, pixels, coef_x=1, coef_y=1):
     import math
     max_length = 0
-    tip = ()
+    max_point = ()
     for pixel in pixels:
         length = math.sqrt(coef_y*(centroid[0] - pixel[0])**2 + coef_x*(centroid[1] - pixel[1])**2)
         if length > max_length:
             max_length = length
-            tip = pixel
-    return max_length, tip
+            max_point = pixel
+    return max_length, max_point
 
 def calculate_max_length_leaf(np_image, coef_x=1, coef_y=1):
     contour_pixels = find_contours(np_image)
@@ -79,3 +79,71 @@ def length_leaf(filename, coef_x=1, coef_y=1):
 def draw_length_leaf(filename, coef_x=1, coef_y=1):
     image = load_image(filename, default_size)
     draw_centroid2tip(image, coef_x, coef_y)
+
+
+"""
+the code for calculate average of length leaves, more complicated than max length
+this function calculate the length of each of leaf
+"""
+
+def find_external_contours(np_image):
+    leaf_image, leaf_mask = extract_leaf(np_image)
+    ret, thresh = cv2.threshold(leaf_mask, 100, 255, 0)
+    contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    return contours
+
+
+def find_good_contours(contours, threshold):
+    new_contours = []
+    for i in range(len(contours)):
+        if len(contours[i]) >= threshold:
+            new_contours.append(contours[i])
+
+    return new_contours
+
+def find_next(f, xs, i):
+    if i+1 < len(xs):
+        return f(i+1)
+    else:
+        return f(0)
+
+def find_prev(f, xs, i):
+    if i > 0:
+        return f(i-1)
+    else:
+        return f(len(xs)-1)
+
+def find_extreme(f, xs):
+    extreme_values = []
+    extreme_xs = []
+    for i in range(len(xs)):
+        if f(i) > find_prev(f, xs, i) and f(i) > find_next(f, xs, i):
+            extreme_values.append(f(i))
+            extreme_xs.append(i)
+    return extreme_values, extreme_xs
+
+
+def calculate_average_length_leaf(np_image, coef_x=1, coef_y=1):
+    leaf_image, leaf_mask = extract_leaf(np_image)
+    centroid = find_centroid(np_image)
+    contours = find_external_contours(np_image)
+    contours = find_good_contours(contours, 10)
+
+    lengths = []
+    for contour in contours:
+        lengths_of_contour = []
+        for pixel in contour:
+            point = tuple(pixel[0])
+            length = math.sqrt((coef_x * (centroid[1] - point[0])) ** 2 + (coef_y * (centroid[0] - point[1])) ** 2)
+            lengths_of_contour.append(length)
+        lengths.append(lengths_of_contour)
+
+    length_leaves = []
+    for length in lengths:
+        idx = [i for i in range(len(length))]
+        f = np.polynomial.chebyshev.Chebyshev.fit(idx, length, 20)
+        value, locate = find_extreme(f, idx)
+        length_leaves += [length[i] for i in locate]
+
+    length_average = sum(length_leaves) / len(length_leaves)
+    return length_average

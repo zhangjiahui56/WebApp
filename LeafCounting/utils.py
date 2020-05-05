@@ -7,7 +7,8 @@ from keras.applications.resnet50 import preprocess_input
 # boundaries for green color
 boundaries = [
     # ([33, 140, 0], [140, 255, 255])
-    ([33, 80, 40], [105, 255, 255])
+    # ([33, 80, 40], [105, 255, 255])
+    ([33, 50, 50], [90, 255, 255])
 ]
 (lower, upper) = boundaries[0]
 lower = np.array(lower, dtype="uint8")
@@ -21,7 +22,7 @@ def extract_leaf(np_image):
     mask = cv2.erode(mask, element, iterations=1)
     mask = cv2.dilate(mask, element, iterations=1)
     mask = cv2.erode(mask, element)
-    output = cv2.bitwise_and(hsvIm, hsvIm, mask=mask)
+    output = cv2.bitwise_and(np_image, np_image, mask=mask)
 
     return output
 

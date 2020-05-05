@@ -4,9 +4,9 @@ from PIL import Image,ImageOps
 
 # boundaries for green color
 boundaries = [
-    # ([33, 80, 40], [105, 255, 255])
     # ([33, 80, 40], [100, 255, 255])
-    ([33, 70, 40], [100, 255, 255])
+    # ([33, 70, 40], [100, 255, 255])
+    ([33, 50, 50], [90, 255, 255])
 ]
 
 (lower, upper) = boundaries[0]
@@ -24,7 +24,7 @@ def extract_leaf(np_image):
     hsvIm = cv2.cvtColor(np_image, cv2.COLOR_BGR2HSV)
     mask = cv2.inRange(hsvIm, lower, upper)
     # mask = remove_noises_mask(mask)
-    output = cv2.bitwise_and(hsvIm, hsvIm, mask=mask)
+    output = cv2.bitwise_and(np_image, np_image, mask=mask)
 
     return output, mask
 
