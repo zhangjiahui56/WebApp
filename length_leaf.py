@@ -83,13 +83,16 @@ def draw_length_leaf(filename, coef_x=1, coef_y=1):
 
 """
 the code for calculate average of length leaves, more complicated than max length
-this function calculate the length of each of leaf
+this function calculate the length of each of leaf and take average of their lengths
+by using Chebyshev noise filter
 """
+
+MIN_CONTOUR_PIXELS = 20
 
 def find_external_contours(np_image):
     leaf_image, leaf_mask = extract_leaf(np_image)
     ret, thresh = cv2.threshold(leaf_mask, 100, 255, 0)
-    contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     return contours
 
 
@@ -122,6 +125,13 @@ def find_extreme(f, xs):
             extreme_xs.append(i)
     return extreme_values, extreme_xs
 
+def choose_deg(length):
+    if len(length) < 100:
+        return 10
+    elif len(length) >= 100 and len(length) < 200:
+        return 20
+    else:
+        return 30
 
 def calculate_average_length_leaf(np_image, coef_x=1, coef_y=1):
     leaf_image, leaf_mask = extract_leaf(np_image)
@@ -141,9 +151,16 @@ def calculate_average_length_leaf(np_image, coef_x=1, coef_y=1):
     length_leaves = []
     for length in lengths:
         idx = [i for i in range(len(length))]
-        f = np.polynomial.chebyshev.Chebyshev.fit(idx, length, 20)
+        f = np.polynomial.chebyshev.Chebyshev.fit(idx, length, choose_deg(length))
         value, locate = find_extreme(f, idx)
         length_leaves += [length[i] for i in locate]
 
     length_average = sum(length_leaves) / len(length_leaves)
     return length_average
+
+def draw_redlines(np_image, locates):
+    draw_image = np_image.copy()
+    for locate in locates:
+        cv2.circle(draw_image, locate, 2, (255,0,0), -1)
+
+    plt.imshow(draw_image)
