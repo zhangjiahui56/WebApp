@@ -1,5 +1,7 @@
 from leaf_area import extract_leaf, default_size
 from LeafCounting.utils import load_image
+import math
+import numpy as np
 
 def find_green_fixels(np_image):
     leaf_image, leaf_mask = extract_leaf(np_image)
@@ -105,16 +107,10 @@ def find_good_contours(contours, threshold):
     return new_contours
 
 def find_next(f, xs, i):
-    if i+1 < len(xs):
-        return f(i+1)
-    else:
-        return f(0)
+    return f(i+1)
 
 def find_prev(f, xs, i):
-    if i > 0:
-        return f(i-1)
-    else:
-        return f(len(xs)-1)
+    return f(i-1)
 
 def find_extreme(f, xs):
     extreme_values = []
@@ -126,18 +122,27 @@ def find_extreme(f, xs):
     return extreme_values, extreme_xs
 
 def choose_deg(length):
-    if len(length) < 100:
-        return 10
-    elif len(length) >= 100 and len(length) < 200:
-        return 20
+    return math.ceil(len(length)/100) * 10
+
+def padding_length(ls, x):
+    if x > len(ls):
+        return ls
     else:
-        return 30
+        return ls[-x:] + ls + ls[:x]
+
+
+def padding_idx(ls, x):
+    if x > len(ls):
+        return ls
+    else:
+        return [i for i in range(-x, 0, 1)] + ls + [len(ls)+i for i in range(x)]
+
 
 def calculate_average_length_leaf(np_image, coef_x=1, coef_y=1):
     leaf_image, leaf_mask = extract_leaf(np_image)
     centroid = find_centroid(np_image)
     contours = find_external_contours(np_image)
-    contours = find_good_contours(contours, 10)
+    contours = find_good_contours(contours, MIN_CONTOUR_PIXELS)
 
     lengths = []
     for contour in contours:
@@ -151,7 +156,8 @@ def calculate_average_length_leaf(np_image, coef_x=1, coef_y=1):
     length_leaves = []
     for length in lengths:
         idx = [i for i in range(len(length))]
-        f = np.polynomial.chebyshev.Chebyshev.fit(idx, length, choose_deg(length))
+        f = np.polynomial.chebyshev.Chebyshev.fit(padding_idx(idx, len(idx) // 2),
+                                                  padding_length(length, len(length) // 2), choose_deg(length))
         value, locate = find_extreme(f, idx)
         length_leaves += [length[i] for i in locate]
 
@@ -164,3 +170,45 @@ def draw_redlines(np_image, locates):
         cv2.circle(draw_image, locate, 2, (255,0,0), -1)
 
     plt.imshow(draw_image)
+
+def get_tip_locates(locates, contours):
+    tip_locates = []
+
+    if len(locates) != len(contours):
+        return tip_locates
+
+    for i in range(len(locates)):
+        for lc in locates[i]:
+            tip_locates.append(tuple(contours[i][lc][0]))
+    return tip_locates
+
+
+def draw_tip_leaf(np_image, coef_x=1, coef_y=1):
+    leaf_image, leaf_mask = extract_leaf(np_image)
+    centroid = find_centroid(np_image)
+    contours = find_external_contours(np_image)
+    contours = find_good_contours(contours, MIN_CONTOUR_PIXELS)
+
+    lengths = []
+    for contour in contours:
+        lengths_of_contour = []
+        for pixel in contour:
+            point = tuple(pixel[0])
+            length = math.sqrt((coef_x * (centroid[1] - point[0])) ** 2 + (coef_y * (centroid[0] - point[1])) ** 2)
+            lengths_of_contour.append(length)
+        lengths.append(lengths_of_contour)
+
+    length_leaves = []
+    locates = []
+    for length in lengths:
+        idx = [i for i in range(len(length))]
+        f = np.polynomial.chebyshev.Chebyshev.fit(padding_idx(idx, len(idx) // 2),
+                                                  padding_length(length, len(length) // 2), choose_deg(length))
+        value, locate = find_extreme(f, idx)
+        length_leaves += [length[i] for i in locate]
+        locates.append(locate)
+
+    length_average = sum(length_leaves) / len(length_leaves)
+
+    tip_locates = get_tip_locates(locates, contours)
+    draw_redlines(np_image, tip_locates)
