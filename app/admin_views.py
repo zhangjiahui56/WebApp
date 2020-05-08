@@ -26,6 +26,10 @@ def show_users():
 @bp.route('/user/<int:id>/delete', methods=['GET', 'POST'])
 def delete_user(id):
     user = load_user(id)
+    if user.is_admin:
+        flash('Cannot delete admin!', 'danger')
+        return redirect(url_for('admin.show_users'))
+
     db.session.delete(user)
     db.session.commit()
     flash('User deleted successfully!', 'success')
@@ -60,6 +64,9 @@ def edit_user():
     form = AdminEditForm()
     if form.validate_on_submit():
         user = load_user(form.user_id.data)
+        if user.is_admin:
+            flash('Cannot edit admin!', 'danger')
+            return redirect(url_for('admin.show_users'))
 
         if user is None:
             error = 'User not exist.'

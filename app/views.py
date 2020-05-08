@@ -101,6 +101,7 @@ def load_logged_in_user():
         g.user = None
 
 @app.route('/logout')
+@login_required
 def logout():
     logout_user()
     return redirect(url_for('index'))
@@ -126,10 +127,12 @@ def create_filename(filename):
     return time_now() + '_' + name + '.' + file_format
 
 @app.route('/images', methods=['GET'])
+@login_required
 def upload_file():
     return render_template('upload_images.html')
 
 @app.route('/images/results', methods=['POST'])
+
 def uploaded_file():
     # check if the post request has the file part
     if 'file' not in request.files:
@@ -154,8 +157,12 @@ def uploaded_file():
     return redirect(url_for('upload_file'))
 
 @app.route('/profile/<int:id>', methods=['GET', 'POST'])
+@login_required
 
 def edit_profile(id):
+    if g.user.id != id:
+        return redirect(url_for('index'))
+
     form = EditProfileForm()
     user = load_user(id)
     if user is None:
@@ -173,8 +180,11 @@ def edit_profile(id):
     return render_template('profile.html', form=form, user=user)
 
 @app.route('/change_password/<int:id>', methods=['GET', 'POST'])
-
+@login_required
 def change_password(id):
+    if g.user.id != id:
+        return redirect(url_for('index'))
+
     form = ChangePassword()
     user = load_user(id)
     if user is None:
