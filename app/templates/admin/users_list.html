@@ -105,7 +105,7 @@
 </div>
 </div>
 
-<!--edit user modal-->
+<!--add user modal-->
   <div class="modal fade" id="addUser" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -118,22 +118,22 @@
       <form action="{{url_for('admin.add_user')}}" method="post" id="add-form">
         {{add_form.hidden_tag()}}
       <div class="modal-body">
-        <div class="form-group" id="">
+        <div class="form-group">
 			<div class="input-group">
             {{add_form.username(class_="form-control", placeholder="Username")}}
             </div>
         </div>
-        <div class="form-group" id="">
+        <div class="form-group">
 			<div class="input-group">
             {{add_form.name(class_="form-control", placeholder="Name")}}
             </div>
         </div>
-        <div class="form-group" id="">
+        <div class="form-group">
 			<div class="input-group">
             {{add_form.address(class_="form-control", placeholder="Address")}}
             </div>
         </div>
-        <div class="form-group" id="">
+        <div class="form-group" >
 			<div class="input-group">
             {{add_form.phone_number(class_="form-control", pattern= '^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$', placeholder="Phone Number")}}
             </div>
@@ -160,7 +160,7 @@
 
       </div>
       <div class="modal-footer">
-        <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+        <button class="btn btn-secondary" type="button" data-dismiss="modal" id="add-cancel">Cancel</button>
         <input class="btn btn-primary" type="submit" value="Save" />
       </div>
       </form>
@@ -183,7 +183,8 @@
         {{edit_form.hidden_tag()}}
       <div class="modal-body">
 
-        <input type="hidden" name="user_id" id="user_id" value="">
+<!--        <input type="hidden" name="user_id" id="edit-user_id" value="">-->
+        {{edit_form.user_id(value="")}}
         <div class="form-group" id="user_id">
           ID:
         </div>
@@ -191,29 +192,29 @@
         <div class="form-group" id="username">
           Username:
         </div>
-        <div class="form-group" id="">
+        <div class="form-group">
 			<div class="input-group">
-            {{edit_form.name(class_="form-control", placeholder="Name")}}
-            </div>
-        </div>
-        <div class="form-group" id="">
-			<div class="input-group">
-            {{edit_form.address(class_="form-control", placeholder="Address")}}
-            </div>
-        </div>
-        <div class="form-group" id="">
-			<div class="input-group">
-            {{edit_form.phone_number(class_="form-control", pattern= '^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$', placeholder="Phone Number")}}
+            {{edit_form.name(class_="form-control", id="edit-name", placeholder="Name")}}
             </div>
         </div>
         <div class="form-group">
 			<div class="input-group">
-              {{edit_form.password(class_="form-control", placeholder="Password")}}
+            {{edit_form.address(class_="form-control", id="edit-address", placeholder="Address")}}
+            </div>
+        </div>
+        <div class="form-group" >
+			<div class="input-group">
+            {{edit_form.phone_number(class_="form-control", id="edit-phonenumber", pattern= '^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$', placeholder="Phone Number")}}
             </div>
         </div>
         <div class="form-group">
 			<div class="input-group">
-            {{edit_form.confirm(class_="form-control", placeholder="Confirm Password")}}
+              {{edit_form.password(class_="form-control", id="edit-password", placeholder="Password")}}
+            </div>
+        </div>
+        <div class="form-group">
+			<div class="input-group">
+            {{edit_form.confirm(class_="form-control", id="edit-confirm", placeholder="Confirm Password")}}
             </div>
         </div>
         <div class="form-group">
@@ -228,7 +229,7 @@
 
       </div>
       <div class="modal-footer">
-        <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+        <button class="btn btn-secondary" type="button" data-dismiss="modal" id="edit-cancel">Cancel</button>
 <!--        <a class="btn btn-primary" id="edit-form-submit" name="save" href="" >Save </a>-->
 <!--        <button class="btn btn-primary" type="submit" data-dismiss="modal" href="">Save</button>-->
         <input class="btn btn-primary" type="submit" value="Save" />

@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, session, url_for, request, g
+from flask import render_template, flash, redirect, session, url_for, request, g, abort
 from flask_login import login_user, logout_user, current_user, login_required
 from app import app, db, login_manager
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -115,8 +115,8 @@ def allowed_file(filename):
 import numpy as np
 # def leaf_predict(image):
 #     image = preprocess_image(image)
-#     pre = model.predict(np.expand_dims(image, axis=0))
-#     return pre
+#     predict = model.predict(np.expand_dims(image, axis=0))
+#     return predict
 
 def time_now():
     return datetime.datetime.now().strftime('%m%d%Y%H%M%S%f')
@@ -161,7 +161,7 @@ def uploaded_file():
 
 def edit_profile(id):
     if g.user.id != id:
-        return redirect(url_for('index'))
+        abort(401)
 
     form = EditProfileForm()
     user = load_user(id)
@@ -183,7 +183,7 @@ def edit_profile(id):
 @login_required
 def change_password(id):
     if g.user.id != id:
-        return redirect(url_for('index'))
+        abort(401)
 
     form = ChangePassword()
     user = load_user(id)

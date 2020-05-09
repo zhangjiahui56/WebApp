@@ -1,1 +1,26 @@
-coming soon ...
+{% extends "admin/layout.html" %}
+
+{% block content %}
+<!-- Page Wrapper -->
+<div id="wrapper">
+
+{% include "admin/_slidebar.html"%}
+
+<!-- Content Wrapper -->
+<div id="content-wrapper" class="d-flex flex-column">
+
+  <!-- Main Content -->
+  <div id="content">
+
+    {% include "admin/_topbar.html"%}
+
+    <!-- Begin Page Content -->
+    <div class="container-fluid">
+      {% include 'admin/_messages.html' %}
+        coming soon ...
+    </div>
+  </div>
+</div>
+</div>
+
+{% endblock %}

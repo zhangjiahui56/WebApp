@@ -1,14 +1,20 @@
-from flask import Blueprint, render_template, flash, redirect, session, url_for, request, g
+from flask import Blueprint, render_template, flash, redirect, session, url_for, request, g, abort
 from flask_login import login_user, logout_user, current_user, login_required
 from app import app, db
 from werkzeug.security import check_password_hash, generate_password_hash
 from .forms import *
 from .models import User
-from .views import load_user
+from .views import load_user, login_required
 from wtforms.fields import SelectField
 import datetime
 
 bp = Blueprint('admin', __name__, url_prefix='/admin')
+
+@bp.before_request
+@login_required
+def check_admin():
+    if g.user.is_admin == 0:
+        abort(401)
 
 @bp.route('/')
 @bp.route('/index')
@@ -56,6 +62,8 @@ def add_user():
         db.session.add(u)
         db.session.commit()
         flash('Add user successfully!', 'success')
+    else:
+        flash('Invalid input!', 'danger')
 
     return redirect(url_for('admin.show_users'))
 
@@ -64,13 +72,14 @@ def edit_user():
     form = AdminEditForm()
     if form.validate_on_submit():
         user = load_user(form.user_id.data)
-        if user.is_admin:
-            flash('Cannot edit admin!', 'danger')
-            return redirect(url_for('admin.show_users'))
 
         if user is None:
             error = 'User not exist.'
             flash(error, 'danger')
+            return redirect(url_for('admin.show_users'))
+
+        if user.is_admin:
+            flash('Cannot edit admin!', 'danger')
             return redirect(url_for('admin.show_users'))
 
         user.name = form.name.data

@@ -18,10 +18,16 @@ document.addEventListener("DOMContentLoaded", function(event) {
     var username = $(e.relatedTarget).data('username')
     //populate the textbox
 
-    var admin_link = "http://127.0.0.1:5000/admin/"
     $(e.currentTarget).find('input[id="user_id"]').val(user_id)
     $(e.currentTarget).find('input[id="username"]').val(username)
     $(e.currentTarget).find('div[id="user_id"]').text("ID: "+user_id)
     $(e.currentTarget).find('div[id="username"]').text("Username: "+username)
-    //$(e.currentTarget).find('a[name="save"]').attr("href", admin_link + "user/" + user_id + "/edit");
+  });
+
+  $("#edit-cancel").on("click", function(e){
+        $('#edit-form')[0].reset();
+  });
+
+  $("#add-cancel").on("click", function(e){
+        $('#add-form')[0].reset();
   });
