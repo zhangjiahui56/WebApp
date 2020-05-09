@@ -85,7 +85,10 @@ def edit_user():
         user.name = form.name.data
         user.address = form.address.data
         user.phone_number = form.phone_number.data
-        user.password = generate_password_hash(form.password.data)
+
+        if form.edit_password.data and form.password.data:
+            user.password = generate_password_hash(form.password.data)
+
         user.is_admin = form.is_admin.data
         db.session.commit()
         flash('Edit user successfully!', 'success')

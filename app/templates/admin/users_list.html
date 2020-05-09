@@ -110,7 +110,7 @@
     <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Edit User</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Add User</h5>
         <button class="close" type="button" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">×</span>
         </button>
@@ -208,23 +208,28 @@
             </div>
         </div>
         <div class="form-group">
-			<div class="input-group">
-              {{edit_form.password(class_="form-control", id="edit-password", placeholder="Password")}}
-            </div>
+          {% for subfield in edit_form.is_admin %}
+            <tr>
+                <td>{{ subfield }}</td>
+                <td>{{ subfield.label }}</td>
+            </tr>
+          {% endfor %}
         </div>
-        <div class="form-group">
-			<div class="input-group">
-            {{edit_form.confirm(class_="form-control", id="edit-confirm", placeholder="Confirm Password")}}
-            </div>
-        </div>
-        <div class="form-group">
-
-            {% for subfield in edit_form.is_admin %}
+        <div class="form-group" >
                 <tr>
-                    <td>{{ subfield }}</td>
-                    <td>{{ subfield.label }}</td>
+                <td>{{edit_form.edit_password(id="check-edit-password")}}</td>
+                <td>Edit Password</td>
                 </tr>
-            {% endfor %}
+        </div>
+        <div class="form-group">
+			<div class="input-group">
+              {{edit_form.password(class_="form-control", id="edit-password", placeholder="Password", disabled="disabled")}}
+            </div>
+        </div>
+        <div class="form-group">
+			<div class="input-group">
+            {{edit_form.confirm(class_="form-control", id="edit-confirm", placeholder="Confirm Password", disabled="disabled")}}
+            </div>
         </div>
 
       </div>

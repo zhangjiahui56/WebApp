@@ -26,8 +26,23 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
   $("#edit-cancel").on("click", function(e){
         $('#edit-form')[0].reset();
+        $('#edit-password').attr('disabled', true);
+        $('#edit-confirm').attr('disabled', true);
   });
 
   $("#add-cancel").on("click", function(e){
         $('#add-form')[0].reset();
+  });
+
+  $("#check-edit-password").on("click", function(e){
+        if($('#check-edit-password').is(':checked')){
+            $('#edit-password').removeAttr("disabled");
+            $('#edit-confirm').removeAttr("disabled");
+        }
+        else{
+            $('#edit-password').val('');
+            $('#edit-confirm').val('');
+            $('#edit-password').attr('disabled', true);
+            $('#edit-confirm').attr('disabled', true);
+        }
   });

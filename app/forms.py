@@ -27,6 +27,14 @@ class AdminAddForm(RegisterForm):
 class AdminEditForm(RegisterForm):
     user_id = HiddenField()
     is_admin = RadioField('Role', choices=[('0','User'),('1','Admin')], default=0)
+    password = PasswordField('Password', [
+        validators.Optional(),
+        validators.DataRequired(),
+        validators.Length(min=6, max=50),
+        validators.EqualTo('confirm', message='Passwords do not match')
+    ])
+    confirm = PasswordField('Confirm Password', [validators.Optional(), validators.DataRequired()])
+    edit_password = BooleanField('Edit Password', default=False)
 
 class EditProfileForm(FlaskForm):
     name = StringField('Name', [validators.DataRequired(), validators.Length(min=3, max=50)])
