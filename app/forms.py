@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, BooleanField, TextAreaField, PasswordField, validators, RadioField, HiddenField
+from wtforms import StringField, BooleanField, TextAreaField, PasswordField, validators, RadioField, HiddenField, IntegerField
 from wtforms.fields.html5 import TelField
 
 phone_number_regexp = '^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$'
@@ -50,3 +50,17 @@ class ChangePassword(FlaskForm):
         validators.EqualTo('confirm', message='Passwords do not match')
     ])
     confirm = PasswordField('Confirm Password', [validators.DataRequired()])
+
+
+class AddPlantForm(FlaskForm):
+    name = StringField('Plant Name', [validators.DataRequired(),validators.Length(min=2, max=100)])
+    number_of_days = IntegerField('Number of Days', [validators.DataRequired()])
+
+class EditPlantForm(AddPlantForm):
+    plant_id = HiddenField()
+
+class AddPhaseForm(FlaskForm):
+    plant_id = HiddenField()
+    name = StringField('Phase Name', [validators.DataRequired(),validators.Length(min=2, max=100)])
+    order = IntegerField('Order of Phase', [validators.DataRequired()])
+    number_of_days = IntegerField('Number of Days', [validators.DataRequired()])

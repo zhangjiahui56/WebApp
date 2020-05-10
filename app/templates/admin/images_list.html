@@ -1,0 +1,119 @@
+{% extends "admin/layout.html" %}
+
+{% block content %}
+<!-- Page Wrapper -->
+<div id="wrapper">
+
+{% include "admin/_slidebar.html"%}
+
+<!-- Content Wrapper -->
+<div id="content-wrapper" class="d-flex flex-column">
+
+  <!-- Main Content -->
+  <div id="content">
+
+    {% include "admin/_topbar.html"%}
+
+    <!-- Begin Page Content -->
+    <div class="container-fluid">
+      {% include 'admin/_messages.html' %}
+
+      <!-- DataTales Example -->
+      <div class="card shadow mb-4">
+        <div class="card-header py-3">
+          <a class="m-0 font-weight-bold text-primary">DataTables Image </a>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>FileName</th>
+                  <th>User</th>
+                  <th>Plant</th>
+                  <th>Phase</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for image in images %}
+                    <tr>
+                      <td>{{image.id}}</td>
+                      <td><a href="{{url_for('static', filename='uploads/images/'+image.filename)}}">{{image.filename}}</a></td>
+                      <td>{{image.user.username}}</td>
+                      <td>{{image.phase.plant.name}}</td>
+                      <td>{{image.phase.name}}</td>
+                      <td>
+                         <a class="delete" title="Delete" data-toggle="modal" data-target="#deleteImage" data-image-id={{image.id}} href="#" ><i class="material-icons">&#xE872;</i></a>
+                      </td>
+<!--                      data-toggle="modal" data-target="#logoutModal"-->
+
+                    </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <!-- /.container-fluid -->
+
+  </div>
+  <!-- End of Main Content -->
+
+  {% include 'admin/_footer.html' %}
+
+</div>
+<!-- End of Content Wrapper -->
+
+</div>
+<!-- End of Page Wrapper -->
+
+<!-- Scroll to Top Button-->
+<a class="scroll-to-top rounded" href="#page-top">
+<i class="fas fa-angle-up"></i>
+</a>
+
+<!-- Logout Modal-->
+<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog" role="document">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+      <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">×</span>
+      </button>
+    </div>
+    <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+      <a class="btn btn-primary" href="{{ url_for('logout') }}">Logout</a>
+    </div>
+  </div>
+</div>
+</div>
+
+<!--delete image modal-->
+  <div class="modal fade" id="deleteImage" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Confirm</h5>
+        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body">Select "Confirm" below if you want to delete image.
+        <input type="hidden" name="image_id" id="image_id" value="">
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+        <a class="btn btn-primary" name="confirm" href="" >Confirm </a>
+      </div>
+    </div>
+    </div>
+  </div>
+<script src="{{url_for('static', filename='images_list.js')}}"></script>
+{% endblock %}

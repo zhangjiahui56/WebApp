@@ -9,7 +9,7 @@ class User(db.Model):
     phone_number = db.Column(db.String(20))
     is_admin = db.Column(db.Integer, default=0)
     timestamp = db.Column(db.DateTime)
-    # posts = db.relationship('Post', backref='author', lazy='dynamic')
+    images = db.relationship('Image', backref='user_images', lazy='dynamic')
 
     @property
     def is_authenticated(self):
@@ -32,11 +32,37 @@ class User(db.Model):
     def __repr__(self):
         return '<User %r>' % (self.username)
 
-class Post(db.Model):
+class Plant(db.Model):
     id = db.Column(db.Integer, primary_key = True)
-    body = db.Column(db.Text)
+    name = db.Column(db.Text)
+    number_of_days = db.Column(db.Integer)
     timestamp = db.Column(db.DateTime)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    phases = db.relationship('Phase', backref='plant_phases', lazy='dynamic')
 
     def __repr__(self):
-        return '<Post %r>' % (self.body)
+        return '<Plant %r>' % (self.name)
+
+class Phase(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    name = db.Column(db.Text)
+    order = db.Column(db.Integer)
+    number_of_days = db.Column(db.Integer)
+    timestamp = db.Column(db.DateTime)
+    plant_id = db.Column(db.Integer, db.ForeignKey('plant.id'))
+    images = db.relationship('Image', backref='phase_images', lazy='dynamic')
+    plant = db.relationship("Plant", back_populates="phases", uselist=False)
+
+    def __repr__(self):
+        return '<Phase %r>' % (self.name)
+
+class Image(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    filename = db.Column(db.Text)
+    timestamp = db.Column(db.DateTime)
+    phase_id = db.Column(db.Integer, db.ForeignKey('phase.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    phase = db.relationship("Phase", back_populates="images", uselist=False)
+    user = db.relationship("User", back_populates="images", uselist=False)
+
+    def __repr__(self):
+        return '<Image %r>' % (self.filename)

@@ -15,13 +15,13 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     //get data-id attribute of the clicked element
     var user_id = $(e.relatedTarget).data('user-id');
-    var username = $(e.relatedTarget).data('username')
+    var username = $(e.relatedTarget).data('username');
     //populate the textbox
 
-    $(e.currentTarget).find('input[id="user_id"]').val(user_id)
-    $(e.currentTarget).find('input[id="username"]').val(username)
-    $(e.currentTarget).find('div[id="user_id"]').text("ID: "+user_id)
-    $(e.currentTarget).find('div[id="username"]').text("Username: "+username)
+    $(e.currentTarget).find('input[id="user_id"]').val(user_id);
+    $(e.currentTarget).find('input[id="username"]').val(username);
+    $(e.currentTarget).find('div[id="user_id"]').text("ID: "+user_id);
+    $(e.currentTarget).find('div[id="username"]').text("Username: "+username);
   });
 
   $("#edit-cancel").on("click", function(e){
@@ -32,6 +32,16 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
   $("#add-cancel").on("click", function(e){
         $('#add-form')[0].reset();
+  });
+
+  $("#edit-x").on("click", function(e){
+        $('#edit-form')[0].reset();
+        $('#edit-password').attr('disabled', true);
+        $('#edit-confirm').attr('disabled', true);
+  });
+
+  $("#add-x").on("click", function(e){
+    $('#add-form')[0].reset();
   });
 
   $("#check-edit-password").on("click", function(e){

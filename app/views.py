@@ -118,13 +118,19 @@ import numpy as np
 #     predict = model.predict(np.expand_dims(image, axis=0))
 #     return predict
 
+import random, string
+
+def randomword(length):
+   letters = string.ascii_lowercase + string.digits + string.ascii_uppercase
+   return ''.join(random.choice(letters) for i in range(length))
+
 def time_now():
     return datetime.datetime.now().strftime('%m%d%Y%H%M%S%f')
 
 def create_filename(filename):
     name = filename.rsplit('.', 1)[0]
     file_format = filename.rsplit('.', 1)[1]
-    return time_now() + '_' + name + '.' + file_format
+    return time_now() + '_' + randomword(10) + '_' + name + '.' + file_format
 
 @app.route('/images', methods=['GET'])
 @login_required

@@ -53,7 +53,7 @@
                         {% endif %}
                       <td>
                         {% if user.is_admin == 0 %}
-                         <a class="edit" title="Edit" data-toggle="modal" data-target="#editUser" data-user-id={{user.id}} data-username={{user.username}} href="#"><i class="material-icons">&#xE254;</i></a>
+                         <a class="edit" title="Edit" data-toggle="modal" data-target="#editUser" data-user-id={{user.id}} data-username="{{user.username}}" href="#"><i class="material-icons">&#xE254;</i></a>
                          <a class="delete" title="Delete" data-toggle="modal" data-target="#deleteUserModal" data-user-id={{user.id}} href="#" ><i class="material-icons">&#xE872;</i></a>
                         {% endif %}
                       </td>
@@ -112,7 +112,7 @@
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel">Add User</h5>
         <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">×</span>
+          <span aria-hidden="true" id="add-x">×</span>
         </button>
       </div>
       <form action="{{url_for('admin.add_user')}}" method="post" id="add-form">
@@ -176,7 +176,7 @@
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel">Edit User</h5>
         <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">×</span>
+          <span aria-hidden="true" id="edit-x">×</span>
         </button>
       </div>
       <form action="{{url_for('admin.edit_user')}}" method="post" id="edit-form">
