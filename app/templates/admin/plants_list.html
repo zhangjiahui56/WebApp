@@ -41,16 +41,18 @@
                 {% for plant in plants %}
                     <tr>
                       <td>{{plant.id}}</td>
-                      <td>{{plant.name}}</td>
-                      <td>{{plant.number_of_days}}</td>
+                      <td><a href="{{url_for('static', filename='img/plant-img/'+plant.avatar)}}">{{plant.name}}</a></td>
+                      <td>
+                        {{ plant.phases | sum(attribute='number_of_days') }}
+                      </td>
                       <td>{{plant.phases.count()}}</td>
-                      <td width="50%">
-                        {% for phase in plant.phases %}
-                          <div style="white-space:pre;"><a>{{phase.order}} - {{phase.name}} : {{phase.number_of_days}} day(s)</a> <a class="delete" title="Delete Phase" data-toggle="modal" data-target="#deletePhase" data-phase-id="{{phase.id}}" href="#" style="float: right;"><i class="material-icons" style="float: right;">&#xE872;</i></a></div>
+                      <td>
+                        {% for phase in plant.phases | sort(attribute='order') %}
+                          <div style="white-space:pre;"><a>{{phase.order}} - {{phase.name}} : {{phase.number_of_days}} day(s)</a> <span style="margin: auto;padding: 10px;"><a class="edit" title="Edit Phase" data-toggle="modal" data-target="#editPhase" data-plant-name="{{phase.plant.name}}" data-phase-id="{{phase.id}}" data-phase-name="{{phase.name}}" data-phase-order="{{phase.order}}" data-phase-days="{{phase.number_of_days}}" href="#"><i class="material-icons">&#xE254;</i></a> <a class="delete" title="Delete Phase" data-toggle="modal" data-target="#deletePhase" data-phase-id="{{phase.id}}" href="#"><i class="material-icons">&#xE872;</i></a></span></div>
                         {% endfor %}
                       </td>
                       <td>
-                         <a class="add" title="Add Phase" data-toggle="modal" data-target="#addPhase" data-plant-id={{plant.id}} data-plant-name="{{plant.name}}" href="#"><i class="material-icons"">&#xE03B;</i></a>
+                         <a class="add" title="Add Phase" data-toggle="modal" data-target="#addPhase" data-plant-id={{plant.id}} data-plant-name="{{plant.name}}" href="#"><i class="material-icons">&#xE03B;</i></a>
                          <a class="edit" title="Edit Plant" data-toggle="modal" data-target="#editPlant" data-plant-id={{plant.id}} data-plant-name="{{plant.name}}" href="#"><i class="material-icons">&#xE254;</i></a>
                          <a class="delete" title="Delete Plant" data-toggle="modal" data-target="#deletePlant" data-plant-id={{plant.id}} href="#" ><i class="material-icons">&#xE872;</i></a>
                       </td>
@@ -106,12 +108,12 @@
     <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Add Plant</h5>
+        <h5 class="modal-title" id="add-plant-modal">Add Plant</h5>
         <button class="close" type="button" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true" id="add-x">×</span>
         </button>
       </div>
-      <form action="{{url_for('admin.add_plant')}}" method="post" id="add-form">
+      <form action="{{url_for('admin.add_plant')}}" enctype="multipart/form-data" method="post" id="add-form">
         {{add_form.hidden_tag()}}
       <div class="modal-body">
         <div class="form-group">
@@ -119,9 +121,11 @@
             {{add_form.name(class_="form-control", placeholder="Plant Name")}}
             </div>
         </div>
+
         <div class="form-group">
+          <label for="img">Select plant image:</label>
 			<div class="input-group">
-            {{add_form.number_of_days(class_="form-control", placeholder="Number of Days")}}
+              {{add_form.avatar(accept="image/*")}}
             </div>
         </div>
 
@@ -141,36 +145,36 @@
     <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Edit Plant</h5>
+        <h5 class="modal-title" id="edit-plant-modal">Edit Plant</h5>
         <button class="close" type="button" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true" id="edit-x">×</span>
         </button>
       </div>
-      <form action="{{url_for('admin.edit_plant')}}" method="post" id="edit-form">
+      <form action="{{url_for('admin.edit_plant')}}" enctype="multipart/form-data" method="post" id="edit-form">
         {{edit_form.hidden_tag()}}
       <div class="modal-body">
-
-<!--        <input type="hidden" name="plant_id" id="edit-plant_id" value="">-->
         {{edit_form.plant_id(value="")}}
         <div class="form-group" id="plant_id">
           ID:
         </div>
         <div class="form-group">
+            <div>Plant Name: </div>
 			<div class="input-group">
-            {{edit_form.name(class_="form-control", id="edit-name", placeholder="Plant Name")}}
+            {{edit_form.name(class_="form-control", id="edit-plant-name", placeholder="Plant Name")}}
             </div>
         </div>
+
+
         <div class="form-group">
+            <label for="img">Select plant image:</label>
 			<div class="input-group">
-            {{edit_form.number_of_days(class_="form-control", id="edit-days", placeholder="Number of Days")}}
+              {{edit_form.avatar(accept="image/*")}}
             </div>
         </div>
 
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" type="button" data-dismiss="modal" id="edit-cancel">Cancel</button>
-<!--        <a class="btn btn-primary" id="edit-form-submit" name="save" href="" >Save </a>-->
-<!--        <button class="btn btn-primary" type="submit" data-dismiss="modal" href="">Save</button>-->
         <input class="btn btn-primary" type="submit" value="Save" />
       </div>
       </form>
@@ -183,14 +187,14 @@
     <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Confirm</h5>
+        <h5 class="modal-title" id="delete-plant-modal">Confirm</h5>
         <button class="close" type="button" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">×</span>
         </button>
       </div>
       <div class="modal-body">Select "Confirm" below if you want to delete plant.
           Delete plant will delete phases and images in this plant. Do you want to continue?
-        <input type="hidden" name="plant_id" id="plant_id" value="">
+        <input type="hidden" name="plant_id" id="delete-plant-plant_id" value="">
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
@@ -205,7 +209,7 @@
     <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Confirm</h5>
+        <h5 class="modal-title" id="delete-phase-modal">Confirm</h5>
         <button class="close" type="button" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">×</span>
         </button>
@@ -226,7 +230,7 @@
     <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Add Phase</h5>
+        <h5 class="modal-title" id="add-phase-modal">Add Phase</h5>
         <button class="close" type="button" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true" id="add-phase-x">×</span>
         </button>
@@ -234,8 +238,8 @@
       <form action="{{url_for('admin.add_phase')}}" method="post" id="add-phase-form">
         {{add_phase_form.hidden_tag()}}
       <div class="modal-body">
-        <input type="hidden" name="plant_id" id="plant_id" value="">
-        <div class="form-group" id="plant_name">
+        {{add_phase_form.plant_id()}}
+        <div class="form-group" id="add-phase-plant_name">
           Plant:
         </div>
         <div class="form-group">
@@ -263,6 +267,53 @@
     </div>
     </div>
   </div>
+
+<!--edit phase modal-->
+  <div class="modal fade" id="editPhase" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="edit-phase-modal">Edit Phase</h5>
+        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true" id="edit-phase-x">×</span>
+        </button>
+      </div>
+      <form action="{{url_for('admin.edit_phase')}}" method="post" id="edit-phase-form">
+        {{edit_phase_form.hidden_tag()}}
+      <div class="modal-body">
+        {{edit_phase_form.phase_id(id="edit-phase-id")}}
+        <div class="form-group" id="edit-phase-plant_name">
+          Plant:
+        </div>
+        <div class="form-group">
+            <div>Phase Name: </div>
+			<div class="input-group">
+            {{edit_phase_form.name(class_="form-control", placeholder="Phase Name")}}
+            </div>
+        </div>
+        <div class="form-group">
+            <div>Phase Order: </div>
+			<div class="input-group">
+            {{edit_phase_form.order(class_="form-control", placeholder="Order of Phase")}}
+            </div>
+        </div>
+        <div class="form-group">
+            <div>Number of Days: </div>
+			<div class="input-group">
+            {{edit_phase_form.number_of_days(class_="form-control", placeholder="Number of Days")}}
+            </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-dismiss="modal" id="edit-phase-cancel">Cancel</button>
+        <input class="btn btn-primary" type="submit" value="Save" />
+      </div>
+      </form>
+    </div>
+    </div>
+  </div>
+
 
 <script src="{{url_for('static', filename='plants_list.js')}}"></script>
 {% endblock %}

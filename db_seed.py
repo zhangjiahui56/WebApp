@@ -11,7 +11,7 @@ db.session.add(u)
 u = models.User(username="anh17", password=generate_password_hash("1234567"), name="tuananh", address="abc", phone_number="1202102010", timestamp=datetime.datetime.utcnow())
 db.session.add(u)
 
-p = models.Plant(name="Cây cải", number_of_days=23, timestamp=datetime.datetime.utcnow())
+p = models.Plant(name="Cây cải", timestamp=datetime.datetime.utcnow())
 db.session.add(p)
 
 db.session.commit()

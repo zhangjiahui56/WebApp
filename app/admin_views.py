@@ -4,9 +4,11 @@ from app import app, db
 from werkzeug.security import check_password_hash, generate_password_hash
 from .forms import *
 from .models import User, Plant, Phase, Image
-from .views import load_user, login_required
+from .views import load_user, login_required, create_filename
 from wtforms.fields import SelectField
+from werkzeug.utils import secure_filename
 import datetime
+import os
 
 bp = Blueprint('admin', __name__, url_prefix='/admin')
 
@@ -111,8 +113,10 @@ def show_plants():
     add_form = AddPlantForm()
     edit_form = EditPlantForm()
     add_phase_form = AddPhaseForm()
+    edit_phase_form = EditPhaseForm()
     plants = Plant.query.all()
-    return render_template('admin/plants_list.html', plants = plants, add_form=add_form, edit_form=edit_form, add_phase_form=add_phase_form)
+    return render_template('admin/plants_list.html', plants = plants, add_form=add_form, edit_form=edit_form, add_phase_form=add_phase_form,
+                           edit_phase_form=edit_phase_form)
 
 def load_plant(plant_id):
     return Plant.query.get(plant_id)
@@ -128,7 +132,15 @@ def add_plant():
             flash(error, 'danger')
             return redirect(url_for('admin.show_plants'))
 
-        p = Plant(name=form.name.data, number_of_days=form.number_of_days.data, timestamp=datetime.datetime.utcnow())
+        p = Plant(name=form.name.data, timestamp=datetime.datetime.utcnow())
+
+        if form.avatar.data:
+            file = form.avatar.data
+            filename = secure_filename(file.filename)
+            newname = create_filename(filename)
+            file.save(os.path.join(app.config['PLANT_AVATAR_FOLDER'], newname))
+            p.avatar = newname
+
         db.session.add(p)
         db.session.commit()
         flash('Add plant successfully!', 'success')
@@ -153,8 +165,14 @@ def edit_plant():
             flash(error, 'danger')
             return redirect(url_for('admin.show_plants'))
 
+        if form.avatar.data:
+            file = form.avatar.data
+            filename = secure_filename(file.filename)
+            newname = create_filename(filename)
+            file.save(os.path.join(app.config['PLANT_AVATAR_FOLDER'], newname))
+            plant.avatar = newname
+
         plant.name = form.name.data
-        plant.number_of_days = form.number_of_days.data
         db.session.commit()
         flash('Edit plant successfully!', 'success')
     else:
@@ -202,21 +220,71 @@ def delete_image(id):
     flash('Image deleted successfully!', 'success')
     return redirect(url_for('admin.show_images'))
 
+def load_phase(phase_id):
+    return Phase.query.get(phase_id)
+
 @bp.route('/phases/add', methods=['POST'])
 def add_phase():
-#     form = AddPhaseForm()
-#     if form.validate_on_submit():
-#         phase = Phase.query.filter_by(plant_id=form.plant_id.data).first()
-#
-#         if phase is None:
-#             error = 'Plant {} is already exist.'.format(form.name.data)
-#             flash(error, 'danger')
-#             return redirect(url_for('admin.show_plants'))
-#
-#         p = Plant(name=form.name.data, number_of_days=form.number_of_days.data, timestamp=datetime.datetime.utcnow())
-#         db.session.add(p)
-#         db.session.commit()
-#         flash('Add plant successfully!', 'success')
-#     else:
-#         flash('Invalid input!', 'danger')
+    form = AddPhaseForm()
+    if form.validate_on_submit():
+        plant = Plant.query.filter_by(id=form.plant_id.data).first()
+
+        if plant is None:
+            flash('Plant not exist!', 'danger')
+            return redirect(url_for('admin.show_plants'))
+
+        for plant_phase in plant.phases:
+            if form.order.data == plant_phase.order:
+                error = 'Order {} is already exist in plant "{}".'.format(form.order.data, plant.name)
+                flash(error, 'danger')
+                return redirect(url_for('admin.show_plants'))
+
+        phase = Phase(name=form.name.data, number_of_days=form.number_of_days.data, order=form.order.data, plant_id=form.plant_id.data, timestamp=datetime.datetime.utcnow())
+        db.session.add(phase)
+        db.session.commit()
+        flash('Add phase successfully!', 'success')
+    else:
+        flash('Invalid input!', 'danger')
+    return redirect(url_for('admin.show_plants'))
+
+@bp.route('/phases/edit', methods=['POST'])
+def edit_phase():
+    form = EditPhaseForm()
+    if form.validate_on_submit():
+        phase = load_phase(form.phase_id.data)
+
+        if phase is None:
+            flash('Phase not exist!', 'danger')
+            return redirect(url_for('admin.show_plants'))
+
+        for plant_phase in phase.plant.phases:
+            if form.order.data == plant_phase.order and phase.id!=plant_phase.id:
+                error = 'Order {} is already exist in plant "{}".'.format(form.order.data, phase.plant.name)
+                flash(error, 'danger')
+                return redirect(url_for('admin.show_plants'))
+
+        phase.name = form.name.data
+        phase.order = form.order.data
+        phase.number_of_days = form.number_of_days.data
+        db.session.commit()
+        flash('Edit phase successfully!', 'success')
+    else:
+        flash('Invalid input!', 'danger')
+    return redirect(url_for('admin.show_plants'))
+
+def delete_phase_with_dependence(phase):
+    for image in phase.images:
+        db.session.delete(image)
+    db.session.delete(phase)
+    db.session.commit()
+
+@bp.route('/phases/<int:id>/delete', methods=['GET', 'POST'])
+def delete_phase(id):
+    phase = load_phase(id)
+    if phase is None:
+        flash('Phase not exist!', 'danger')
+        return  redirect(url_for('admin.show_plants'))
+
+    delete_phase_with_dependence(phase)
+    flash('Phase deleted successfully!', 'success')
     return redirect(url_for('admin.show_plants'))

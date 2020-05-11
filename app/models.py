@@ -35,7 +35,7 @@ class User(db.Model):
 class Plant(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     name = db.Column(db.Text)
-    number_of_days = db.Column(db.Integer)
+    avatar = db.Column(db.String(100), default="default-image.jpg")
     timestamp = db.Column(db.DateTime)
     phases = db.relationship('Phase', backref='plant_phases', lazy='dynamic')
 

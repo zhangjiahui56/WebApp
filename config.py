@@ -23,3 +23,4 @@ SQLALCHEMY_TRACK_MODIFICATIONS = False
 UPLOAD_FOLDER = 'app/static/uploads/images'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 MAX_CONTENT_LENGTH = 16 * 1024 * 1024
+PLANT_AVATAR_FOLDER = 'app/static/img/plant-img'

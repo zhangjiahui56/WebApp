@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, BooleanField, TextAreaField, PasswordField, validators, RadioField, HiddenField, IntegerField
 from wtforms.fields.html5 import TelField
+from flask_wtf.file import FileField, FileAllowed, FileRequired
 
 phone_number_regexp = '^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$'
 
@@ -54,13 +55,19 @@ class ChangePassword(FlaskForm):
 
 class AddPlantForm(FlaskForm):
     name = StringField('Plant Name', [validators.DataRequired(),validators.Length(min=2, max=100)])
-    number_of_days = IntegerField('Number of Days', [validators.DataRequired()])
+    avatar = FileField('Plant Avatar', [validators.Optional(), FileAllowed(['jpg', 'png'], 'Images only!')])
 
 class EditPlantForm(AddPlantForm):
     plant_id = HiddenField()
 
 class AddPhaseForm(FlaskForm):
-    plant_id = HiddenField()
+    plant_id = HiddenField(id="add-phase-plant_id")
     name = StringField('Phase Name', [validators.DataRequired(),validators.Length(min=2, max=100)])
+    order = IntegerField('Order of Phase', [validators.DataRequired()])
+    number_of_days = IntegerField('Number of Days', [validators.DataRequired()])
+
+class EditPhaseForm(FlaskForm):
+    phase_id = HiddenField(id="edit-phase-id")
+    name = StringField('Phase Name', [validators.DataRequired(), validators.Length(min=2, max=100)])
     order = IntegerField('Order of Phase', [validators.DataRequired()])
     number_of_days = IntegerField('Number of Days', [validators.DataRequired()])

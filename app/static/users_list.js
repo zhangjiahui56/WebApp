@@ -16,12 +16,19 @@ document.addEventListener("DOMContentLoaded", function(event) {
     //get data-id attribute of the clicked element
     var user_id = $(e.relatedTarget).data('user-id');
     var username = $(e.relatedTarget).data('username');
+    var name = $(e.relatedTarget).data('name');
+    var address = $(e.relatedTarget).data('address');
+    var phone_number = $(e.relatedTarget).data('phone');
     //populate the textbox
 
     $(e.currentTarget).find('input[id="user_id"]').val(user_id);
     $(e.currentTarget).find('input[id="username"]').val(username);
     $(e.currentTarget).find('div[id="user_id"]').text("ID: "+user_id);
     $(e.currentTarget).find('div[id="username"]').text("Username: "+username);
+    $(e.currentTarget).find('input[id="edit-name"]').val(name);
+    $(e.currentTarget).find('input[id="edit-address"]').val(address);
+    $(e.currentTarget).find('input[id="edit-phone_number"]').val(phone_number);
+
   });
 
   $("#edit-cancel").on("click", function(e){
