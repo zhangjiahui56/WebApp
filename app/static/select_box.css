@@ -1,0 +1,10 @@
+.phase_id{
+    width:250px;
+    height:30px;
+    border:2px solid #70c745;
+    border-radius: 6px;
+}
+
+.choose-phase_id-div{
+    padding: 50px 10px 70px 10px;
+}

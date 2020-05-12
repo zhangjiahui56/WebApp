@@ -40,7 +40,13 @@
                 {% for image in images %}
                     <tr>
                       <td>{{image.id}}</td>
-                      <td><a href="{{url_for('static', filename='uploads/images/'+image.filename)}}">{{image.filename}}</a></td>
+                      <td>
+                        <a href="{{url_for('static', filename='uploads/images/'+image.filename)}}">{{image.filename}}</a>
+                        <div class="box">
+                          <image src="{{url_for('static', filename='uploads/images/'+image.filename)}}" class="image_hover">
+                          </image>
+                        </div>
+                      </td>
                       <td>{{image.user.username}}</td>
                       <td>{{image.phase.plant.name}}</td>
                       <td>{{image.phase.name}}</td>

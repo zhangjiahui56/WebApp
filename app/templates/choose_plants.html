@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% with title="Choose Plants" %}
+{% include 'includes/_mini_slide.html' %}
+{% endwith %}
+
+<div class="container">
+<div class="p-5">
+<main class="main_full">
+    {% for plant in plants %}
+        <!-- Single Product Area -->
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <div class="single-product-area mb-50 wow fadeInUp" data-wow-delay="200ms">
+                        <!-- Product Image -->
+                        <div style="text-align: center;">
+                            <a href="{{url_for('upload_file', plant_id=plant.id)}}"><img src="{{url_for('static', filename='img/plant-img/'+plant.avatar)}}" alt="" style="width:224px;height:224px;"></a>
+
+                            <a href="{{url_for('upload_file', plant_id=plant.id)}}">
+                                <p>{{plant.name}}</p>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+    {% endfor %}
+</main>
+</div>
+</div>
+
+{% endblock %}

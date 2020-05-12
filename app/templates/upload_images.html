@@ -6,13 +6,26 @@
 {% endwith %}
 <div class="container">
 <div class="p-5">
+{% include "/includes/_messages.html" %}
 <main class="main_full">
     <div class="container" id="upload-container">
-      <form method="POST" action="{{url_for('uploaded_file')}}" enctype="multipart/form-data" id="form-upload">
+      <form method="POST" action="{{url_for('upload_file', plant_id=plant.id)}}" enctype="multipart/form-data" id="form-upload">
+          {{upload_form.csrf_token()}}
         <div class="upload-panel">
+
+            <div class="form-group" style="text-align: center;">
+                <h1 style="color:#70c745;">Plant: {{plant.name}}</h1>
+            </div>
+                 {{upload_form.user_id(value=g.user.id)}}
+              <div class="choose-phase_id-div">
+                  <h3 style="color:#70c745;">Choose Phase: </h3>
+                {{upload_form.phase_id(class="phase_id")}}
+              </div>
+
             <div class="button_outer">
                 <div class="btn_upload">
-                    <input type="file" id="upload_file" name="file">
+<!--                    <input type="file" id="upload_file" name="file">-->
+                    {{upload_form.image(id="upload_file", accept="image/*")}}
                     Choose Image
                 </div>
                 <div class="processing_bar"></div>

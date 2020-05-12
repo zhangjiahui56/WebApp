@@ -14,13 +14,14 @@ var btnUpload = $("#upload_file"),
             setTimeout(function(){
                 $("#uploaded_view").append('<img src="'+uploadedFile+'" />').addClass("show");
 
-                $("#form-upload").append('<button type="submit" class="btn btn-primary" style="display: block; margin: 0 auto;font-size: 1.5rem;">Upload</button>');
+                $("#form-upload").append('<button type="submit" class="btn btn-primary" style="display: block; margin: 0 auto;font-size: 2rem;background-color:#70c745;border-color:#70c745">Upload</button>');
             },3500);
         }
     });
     $(".file_remove").on("click", function(e){
         $("#uploaded_view").removeClass("show");
         $("#uploaded_view").find("img").remove();
+        $("#upload_file").val('');
         $("#form-upload").find("button").remove();
         btnOuter.removeClass("file_uploading");
         btnOuter.removeClass("file_uploaded");

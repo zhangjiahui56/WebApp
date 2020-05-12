@@ -1,0 +1,18 @@
+.box{
+    display: none;
+}
+
+a:hover + .box,.box:hover{
+    display: block;
+    width: 100px;
+    position: absolute;
+    z-index: 1;
+}
+
+.image_hover{
+    width: 140px;
+    height: 140px;
+    border-radius: 6px;
+    padding: 3px 3px 3px 3px;
+    background-color: blue;
+}

@@ -41,7 +41,13 @@
                 {% for plant in plants %}
                     <tr>
                       <td>{{plant.id}}</td>
-                      <td><a href="{{url_for('static', filename='img/plant-img/'+plant.avatar)}}">{{plant.name}}</a></td>
+                      <td>
+                        <a href="{{url_for('static', filename='img/plant-img/'+plant.avatar)}}">{{plant.name}}</a>
+                        <div class="box">
+                          <image src="{{url_for('static', filename='img/plant-img/'+plant.avatar)}}" class="image_hover">
+                          </image>
+                        </div>
+                      </td>
                       <td>
                         {{ plant.phases | sum(attribute='number_of_days') }}
                       </td>
@@ -114,7 +120,7 @@
         </button>
       </div>
       <form action="{{url_for('admin.add_plant')}}" enctype="multipart/form-data" method="post" id="add-form">
-        {{add_form.hidden_tag()}}
+        {{add_form.csrf_token()}}
       <div class="modal-body">
         <div class="form-group">
 			<div class="input-group">
@@ -123,7 +129,7 @@
         </div>
 
         <div class="form-group">
-          <label for="img">Select plant image:</label>
+          <label>Select plant image:</label>
 			<div class="input-group">
               {{add_form.avatar(accept="image/*")}}
             </div>
@@ -151,7 +157,7 @@
         </button>
       </div>
       <form action="{{url_for('admin.edit_plant')}}" enctype="multipart/form-data" method="post" id="edit-form">
-        {{edit_form.hidden_tag()}}
+        {{edit_form.csrf_token()}}
       <div class="modal-body">
         {{edit_form.plant_id(value="")}}
         <div class="form-group" id="plant_id">
@@ -166,7 +172,7 @@
 
 
         <div class="form-group">
-            <label for="img">Select plant image:</label>
+            <label>Select plant image:</label>
 			<div class="input-group">
               {{edit_form.avatar(accept="image/*")}}
             </div>
@@ -236,7 +242,7 @@
         </button>
       </div>
       <form action="{{url_for('admin.add_phase')}}" method="post" id="add-phase-form">
-        {{add_phase_form.hidden_tag()}}
+        {{add_phase_form.csrf_token()}}
       <div class="modal-body">
         {{add_phase_form.plant_id()}}
         <div class="form-group" id="add-phase-plant_name">
@@ -279,7 +285,7 @@
         </button>
       </div>
       <form action="{{url_for('admin.edit_phase')}}" method="post" id="edit-phase-form">
-        {{edit_phase_form.hidden_tag()}}
+        {{edit_phase_form.csrf_token()}}
       <div class="modal-body">
         {{edit_phase_form.phase_id(id="edit-phase-id")}}
         <div class="form-group" id="edit-phase-plant_name">

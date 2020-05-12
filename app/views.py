@@ -7,7 +7,7 @@ import datetime
 import os
 import functools
 from .forms import *
-from .models import User
+from .models import User, Plant, Phase, Image
 
 def login_required(view):
     @functools.wraps(view)
@@ -132,10 +132,46 @@ def create_filename(filename):
     file_format = filename.rsplit('.', 1)[1]
     return time_now() + '_' + randomword(10) + '_' + name + '.' + file_format
 
-@app.route('/images', methods=['GET'])
+def load_plant(plant_id):
+    return Plant.query.get(plant_id)
+
+def load_phase(phase_id):
+    return Phase.query.get(phase_id)
+
+@app.route('/plants/<int:plant_id>/images', methods=['GET', 'POST'])
 @login_required
-def upload_file():
-    return render_template('upload_images.html')
+def upload_file(plant_id):
+    plant = load_plant(plant_id)
+    if plant is None:
+        abort(404)
+    upload_form = UploadImageForm()
+    phases_list = [(phase.id, phase.name) for phase in plant.phases]
+    upload_form.phase_id.choices = phases_list
+    if upload_form.validate_on_submit():
+        print()
+        user = load_user(upload_form.user_id.data)
+        if user is None:
+            flash("User not exist!", 'danger')
+            return redirect('upload_file', plant.id)
+
+        phase = load_phase(upload_form.phase_id.data)
+        if phase is None:
+            flash("Phase not exist!", 'danger')
+            return redirect('upload_file', plant.id)
+
+        file = upload_form.image.data
+        filename = secure_filename(file.filename)
+        # leaf_pred = leaf_predict(file)
+        newname = create_filename(filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], newname))
+
+        img = Image(filename=newname, user_id=upload_form.user_id.data, phase_id=upload_form.phase_id.data, timestamp=datetime.datetime.utcnow())
+        db.session.add(img)
+        db.session.commit()
+        flash('Upload successfully!', 'success')
+        return redirect(url_for('upload_file', plant_id=plant.id))
+
+    return render_template('upload_images.html', upload_form=upload_form, plant=plant)
 
 @app.route('/images/results', methods=['POST'])
 
@@ -207,3 +243,9 @@ def change_password(id):
         return redirect(url_for('change_password', id=user.id))
 
     return render_template('change_password.html', form=form, user=user)
+
+@app.route('/choose_plants', methods=['GET'])
+@login_required
+def choose_plants():
+    plants = Plant.query.all()
+    return render_template('choose_plants.html', plants=plants)

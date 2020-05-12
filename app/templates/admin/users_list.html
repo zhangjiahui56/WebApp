@@ -116,7 +116,7 @@
         </button>
       </div>
       <form action="{{url_for('admin.add_user')}}" method="post" id="add-form">
-        {{add_form.hidden_tag()}}
+        {{add_form.csrf_token()}}
       <div class="modal-body">
         <div class="form-group">
 			<div class="input-group">
@@ -180,7 +180,7 @@
         </button>
       </div>
       <form action="{{url_for('admin.edit_user')}}" method="post" id="edit-form">
-        {{edit_form.hidden_tag()}}
+        {{edit_form.csrf_token()}}
       <div class="modal-body">
 
         {{edit_form.user_id(value="")}}
