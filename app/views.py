@@ -145,7 +145,7 @@ def upload_file(plant_id):
     if plant is None:
         abort(404)
     upload_form = UploadImageForm()
-    phases_list = [(phase.id, phase.name) for phase in plant.phases]
+    phases_list = [(phase.id, phase.name) for phase in plant.phases.order_by("order")]
     upload_form.phase_id.choices = phases_list
     if upload_form.validate_on_submit():
         user = load_user(upload_form.user_id.data)
