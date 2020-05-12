@@ -1,0 +1,12 @@
+{% macro render_form_errors(form) %}
+{% for field in form %}
+    {% if field.errors %}
+    {% for error in field.errors %}
+        <div class="alert alert-danger" align="center">
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+          <strong>{{ error }}</strong>
+        </div>
+    {% endfor %}
+  {% endif %}
+{% endfor %}
+{% endmacro %}

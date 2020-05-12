@@ -148,16 +148,15 @@ def upload_file(plant_id):
     phases_list = [(phase.id, phase.name) for phase in plant.phases]
     upload_form.phase_id.choices = phases_list
     if upload_form.validate_on_submit():
-        print()
         user = load_user(upload_form.user_id.data)
         if user is None:
             flash("User not exist!", 'danger')
-            return redirect('upload_file', plant.id)
+            return redirect(url_for('upload_file', plant_id=plant.id))
 
         phase = load_phase(upload_form.phase_id.data)
         if phase is None:
             flash("Phase not exist!", 'danger')
-            return redirect('upload_file', plant.id)
+            return redirect(url_for('upload_file', plant_id=plant.id))
 
         file = upload_form.image.data
         filename = secure_filename(file.filename)
