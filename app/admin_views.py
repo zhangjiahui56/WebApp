@@ -3,11 +3,12 @@ from flask_login import login_user, logout_user, current_user, login_required
 from app import app, db
 from werkzeug.security import check_password_hash, generate_password_hash
 from .forms import *
-from .models import User, Plant, Phase, Image
+from .models import User, Plant, Phase, Image, Feature
 from .views import load_user, login_required, create_filename
 from wtforms.fields import SelectField
 from werkzeug.utils import secure_filename
 import datetime
+import unidecode
 import os
 
 bp = Blueprint('admin', __name__, url_prefix='/admin')
@@ -65,7 +66,7 @@ def add_user():
         user = User.query.filter_by(username=username).first()
 
         if user is not None:
-            error = 'User {} is already registered.'.format(username)
+            error = 'User "{}" is already registered.'.format(username)
             flash(error, 'danger')
             return redirect(url_for('admin.show_users'))
 
@@ -128,7 +129,7 @@ def add_plant():
         plant = Plant.query.filter_by(name=form.name.data).first()
 
         if plant is not None:
-            error = 'Plant {} is already exist.'.format(form.name.data)
+            error = 'Plant "{}" is already exist.'.format(form.name.data)
             flash(error, 'danger')
             return redirect(url_for('admin.show_plants'))
 
@@ -161,7 +162,7 @@ def edit_plant():
 
         plant_test = Plant.query.filter_by(name=form.name.data).first()
         if plant_test and plant_test.id != plant.id:
-            error = 'Plant {} is already exist.'.format(form.name.data)
+            error = 'Plant "{}" is already exist.'.format(form.name.data)
             flash(error, 'danger')
             return redirect(url_for('admin.show_plants'))
 
@@ -288,3 +289,109 @@ def delete_phase(id):
     delete_phase_with_dependence(phase)
     flash('Phase deleted successfully!', 'success')
     return redirect(url_for('admin.show_plants'))
+
+@bp.route('/features')
+def show_features():
+    form = AddFeatureForm()
+    features = Feature.query.all()
+    return render_template('admin/features_list.html', features=features, form=form)
+
+def convert2code(text):
+    tx = unidecode.unidecode(text)
+    return tx.replace(' ', '').lower()
+
+@bp.route('/features/add', methods=['POST'])
+def add_feature():
+    form = AddFeatureForm()
+    if form.validate_on_submit():
+        feature_test = Feature.query.filter_by(code=convert2code(form.name.data)).first()
+        if feature_test is not None:
+            flash('Feature "{}" is already exist.'.format(form.name.data), 'danger')
+            return redirect(url_for('admin.show_features'))
+
+        feature = Feature(name=form.name.data, code=convert2code(form.name.data), timestamp=datetime.datetime.utcnow())
+        db.session.add(feature)
+        db.session.commit()
+        flash('Add feature successfully!', 'success')
+    else:
+        flash('Invalid input!', 'danger')
+    return redirect(url_for('admin.show_features'))
+
+def load_feature(feature_id):
+    return Feature.query.get(feature_id)
+
+@bp.route('/features/<int:id>/delete', methods=['GET', 'POST'])
+def delete_feature(id):
+    feature = load_feature(id)
+    if feature is None:
+        flash('Feature not exist!', 'danger')
+        return  redirect(url_for('admin.show_features'))
+
+    db.session.delete(feature)
+    db.session.commit()
+    flash('Feature deleted successfully!', 'success')
+    return redirect(url_for('admin.show_features'))
+
+@bp.route('/phase_detail/<int:id>')
+def show_phase_detail(id):
+    add_phase_feature_form = AddPhaseFeatureForm()
+    phase = load_phase(id)
+    if phase is None:
+        flash('Phase not exist!', 'danger')
+        return redirect(url_for('admin.show_plants'))
+
+    features = Feature.query.all()
+    features_list = [(feature.id, feature.name) for feature in features if feature not in phase.features]
+    add_phase_feature_form.feature_id.choices = features_list
+    return render_template('admin/phase_detail.html', phase=phase, add_phase_feature_form=add_phase_feature_form)
+
+@bp.route('/phase/<int:id>/add_feature', methods=['POST'])
+def add_feature2phase(id):
+    add_phase_feature_form = AddPhaseFeatureForm()
+    phase = load_phase(id)
+    if phase is None:
+        flash('Phase not exist!', 'danger')
+        return redirect(url_for('admin.show_plants'))
+
+    features = Feature.query.all()
+    features_list = [(feature.id, feature.name) for feature in features if feature not in phase.features]
+    add_phase_feature_form.feature_id.choices = features_list
+    if add_phase_feature_form.validate_on_submit():
+        feature = load_feature(add_phase_feature_form.feature_id.data)
+        if feature is None:
+            flash('Feature not exist!', 'danger')
+            return redirect(url_for('admin.show_phase_detail', id=id))
+
+        if feature in phase.features:
+            flash('Feature "{}" is already exist in phase "{}".'.format(feature.name, phase.name), 'danger')
+            return redirect(url_for('admin.show_phase_detail', id=id))
+
+        phase.features.append(feature)
+        db.session.commit()
+        flash('Add successfully!', 'success')
+    else:
+        flash('Invalid input!', 'danger')
+
+    return redirect(url_for('admin.show_phase_detail', id=id))
+
+@bp.route('/phase/<int:phase_id>/delete_feature/<int:feature_id>', methods=['GET', 'POST'])
+def delete_featurefromphase(phase_id, feature_id):
+    phase = load_phase(phase_id)
+    if phase is None:
+        flash('Phase not exist!', 'danger')
+        return redirect(url_for('admin.show_plants'))
+
+    feature = load_feature(feature_id)
+    if feature is None:
+        flash('Feature not exist!', 'danger')
+        return redirect(url_for('admin.show_phase_detail', id=phase_id))
+
+    if feature not in phase.features:
+        flash('feature "{}" not in phase "{}"!'.format(feature.name, phase.name), 'danger')
+        return redirect(url_for('admin.show_phase_detail', id=phase_id))
+
+    phase.features.remove(feature)
+    db.session.commit()
+    flash('Delete feature "{}" from phase "{}" successfully!'.format(feature.name, phase.name), 'success')
+
+    return redirect(url_for('admin.show_phase_detail', id=phase_id))

@@ -15,10 +15,11 @@
                         <!-- Product Image -->
                         <div style="text-align: center;">
                             <a href="{{url_for('upload_file', plant_id=plant.id)}}"><img src="{{url_for('static', filename='img/plant-img/'+plant.avatar)}}" alt="" style="width:224px;height:224px;"></a>
-
-                            <a href="{{url_for('upload_file', plant_id=plant.id)}}">
-                                <p>{{plant.name}}</p>
-                            </a>
+                            <div class="service-content" style="padding: 20px;">
+                                <a href="{{url_for('upload_file', plant_id=plant.id)}}">
+                                    <h2 style="color:#70c745;">{{plant.name}}</h2>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -215,7 +215,7 @@ def edit_profile(id):
         user.address = form.address.data
         user.phone_number = form.phone_number.data
         db.session.commit()
-        flash('Edit user successfully!', 'success')
+        flash('Edit profile successfully!', 'success')
         return redirect(url_for('edit_profile', id=user.id))
 
     return render_template('profile.html', form=form, user=user)

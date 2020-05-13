@@ -42,6 +42,11 @@ class Plant(db.Model):
     def __repr__(self):
         return '<Plant %r>' % (self.name)
 
+phase_feature = db.Table('phase_feature',
+    db.Column('phase_id', db.Integer, db.ForeignKey('phase.id'), primary_key=True),
+    db.Column('feature_id', db.Integer, db.ForeignKey('feature.id'), primary_key=True)
+)
+
 class Phase(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     name = db.Column(db.Text)
@@ -51,6 +56,8 @@ class Phase(db.Model):
     plant_id = db.Column(db.Integer, db.ForeignKey('plant.id'))
     images = db.relationship('Image', backref='phase_images', lazy='dynamic')
     plant = db.relationship("Plant", back_populates="phases", uselist=False)
+    features = db.relationship('Feature', secondary=phase_feature, lazy='subquery',
+                           backref=db.backref('phases', lazy=True))
 
     def __repr__(self):
         return '<Phase %r>' % (self.name)
@@ -66,3 +73,13 @@ class Image(db.Model):
 
     def __repr__(self):
         return '<Image %r>' % (self.filename)
+
+class Feature(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.Text)
+    code = db.Column(db.Text)
+    timestamp = db.Column(db.DateTime)
+    def __repr__(self):
+        return '<Feature %r>' % (self.name)
+
+

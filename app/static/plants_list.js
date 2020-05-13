@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     //get data-id attribute of the clicked element
     var plant_id = $(e.relatedTarget).data('plant-id');
     //populate the textbox
-    var admin_link = "http://127.0.0.1:5000/admin/"
+    var admin_link = "http://127.0.0.1:5000/admin/";
     $(e.currentTarget).find('a[name="confirm"]').attr("href", admin_link + "plants/" + plant_id + "/delete");
   });
 

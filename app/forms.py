@@ -55,7 +55,7 @@ class ChangePassword(FlaskForm):
 
 class AddPlantForm(FlaskForm):
     name = StringField('Plant Name', [validators.DataRequired(),validators.Length(min=2, max=100)])
-    avatar = FileField('Plant Avatar', [validators.Optional(), FileAllowed(['jpg', 'png'], 'Images only!')])
+    avatar = FileField('Plant Avatar', [validators.Optional(), FileAllowed(['jpg', 'png', 'jpeg'], 'Images only!')])
 
 class EditPlantForm(AddPlantForm):
     plant_id = HiddenField()
@@ -74,5 +74,11 @@ class EditPhaseForm(FlaskForm):
 
 class UploadImageForm(FlaskForm):
     user_id = HiddenField()
-    image = FileField('Plant Avatar', [FileRequired(), FileAllowed(['jpg', 'png'], 'Images only!')])
+    image = FileField('Plant Avatar', [FileRequired(), FileAllowed(['jpg', 'png', 'jpeg'], 'Images only!')])
     phase_id = SelectField('Phase', coerce=int, validators=[validators.DataRequired()])
+
+class AddFeatureForm(FlaskForm):
+    name = StringField('Feature Name', [validators.DataRequired(),validators.Length(min=2, max=100)])
+
+class AddPhaseFeatureForm(FlaskForm):
+    feature_id = SelectField('Feature', coerce=int, validators=[validators.DataRequired()])

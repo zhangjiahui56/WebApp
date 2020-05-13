@@ -1,8 +1,10 @@
 .phase_id{
-    width:250px;
+    width:300px;
     height:30px;
     border:2px solid #70c745;
     border-radius: 6px;
+    text-align: center;
+    text-align-last: center;
 }
 
 .choose-phase_id-div{
