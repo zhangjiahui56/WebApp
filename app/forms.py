@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, BooleanField, TextAreaField, PasswordField, validators, RadioField, HiddenField, IntegerField, SelectField
+from wtforms import StringField, BooleanField, TextAreaField, PasswordField, validators, RadioField, HiddenField, IntegerField, SelectField, MultipleFileField
 from wtforms.fields.html5 import TelField
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 
@@ -74,7 +74,7 @@ class EditPhaseForm(FlaskForm):
 
 class UploadImageForm(FlaskForm):
     user_id = HiddenField()
-    image = FileField('Plant Avatar', [FileRequired(), FileAllowed(['jpg', 'png', 'jpeg'], 'Images only!')])
+    image = FileField('Plant Image', [FileRequired(), FileAllowed(['jpg', 'png', 'jpeg'], 'Images only!')])
     phase_id = SelectField('Phase', coerce=int, validators=[validators.DataRequired()])
 
 class AddFeatureForm(FlaskForm):
@@ -82,3 +82,7 @@ class AddFeatureForm(FlaskForm):
 
 class AddPhaseFeatureForm(FlaskForm):
     feature_id = SelectField('Feature', coerce=int, validators=[validators.DataRequired()])
+
+class UploadZipForm(FlaskForm):
+    zip_file = FileField('Plant Images 30 Days', [FileRequired(), FileAllowed(['zip'], 'Zip only!')])
+    phase_id = SelectField('Phase', coerce=int, validators=[validators.DataRequired()])

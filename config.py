@@ -24,3 +24,9 @@ UPLOAD_FOLDER = 'app/static/uploads/images'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 MAX_CONTENT_LENGTH = 16 * 1024 * 1024
 PLANT_AVATAR_FOLDER = 'app/static/img/plant-img'
+
+UPLOAD_ZIP_FOLDER = 'app/static/uploads/zip_files'
+EXTRACT_ZIP_FOLDER = 'app/static/uploads/zip_folders'
+
+GRAPH_IMAGES_FOLDER = 'app/static/uploads/graph_images'
+DOWNLOAD_IMAGES = 'static/uploads/graph_images'

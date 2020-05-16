@@ -2,7 +2,6 @@ import numpy as np
 import cv2
 from PIL import Image,ImageOps
 import pandas as pd
-from keras.applications.resnet50 import preprocess_input
 
 # boundaries for green color
 boundaries = [
@@ -97,6 +96,7 @@ def load_image(filename, size=(240, 240)):
 
 # preprocess input image
 def preprocess_image(filename, size):
+    from keras.applications.resnet50 import preprocess_input
     image = load_image(filename, size)
     image = preprocess_input(image)
 

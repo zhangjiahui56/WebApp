@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, session, url_for, request, g, abort
+from flask import render_template, flash, redirect, session, url_for, request, g, abort, send_from_directory, send_file
 from flask_login import login_user, logout_user, current_user, login_required
 from app import app, db, login_manager
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -6,8 +6,14 @@ from werkzeug.utils import secure_filename
 import datetime
 import os
 import functools
+import zipfile
+import shutil
 from .forms import *
 from .models import User, Plant, Phase, Image
+from leaf_area import calculate_leaf_area
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 
 def login_required(view):
     @functools.wraps(view)
@@ -148,10 +154,6 @@ def upload_file(plant_id):
     phases_list = [(phase.id, phase.name) for phase in plant.phases.order_by("order")]
     upload_form.phase_id.choices = phases_list
     if upload_form.validate_on_submit():
-        user = load_user(upload_form.user_id.data)
-        if user is None:
-            flash("User not exist!", 'danger')
-            return redirect(url_for('upload_file', plant_id=plant.id))
 
         phase = load_phase(upload_form.phase_id.data)
         if phase is None:
@@ -164,7 +166,7 @@ def upload_file(plant_id):
         newname = create_filename(filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], newname))
 
-        img = Image(filename=newname, user_id=upload_form.user_id.data, phase_id=upload_form.phase_id.data, timestamp=datetime.datetime.utcnow())
+        img = Image(filename=newname, user_id=g.user.id, phase_id=upload_form.phase_id.data, timestamp=datetime.datetime.utcnow())
         db.session.add(img)
         db.session.commit()
         flash('Upload successfully!', 'success')
@@ -248,3 +250,75 @@ def change_password(id):
 def choose_plants():
     plants = Plant.query.all()
     return render_template('choose_plants.html', plants=plants)
+
+
+def get_dir_name(zip_ref):
+    return list(set([os.path.dirname(name) for name in zip_ref.namelist()]))[0]
+
+def process_multi_images(zip_ref, newname):
+    dir_name = get_dir_name(zip_ref)
+    dir_path = os.path.join(app.config['EXTRACT_ZIP_FOLDER'], dir_name)
+    images_path = [os.path.join(dir_path, f) for f in os.listdir(dir_path) if os.path.isfile(os.path.join(dir_path, f))]
+    leaf_areas = [calculate_leaf_area(f) for f in images_path]
+    # plt.xlim(0, 30)
+    plt.xlabel("Images")
+    plt.ylabel("Percent of Image")
+    plt.xticks([i for i in range(len(leaf_areas))])
+    plt.tick_params(labelsize=10)
+    plt.ylim(0, 1)
+    plt.plot([i for i in range(len(leaf_areas))], leaf_areas)
+    result_filename = os.path.splitext(newname)[0] + '.png'
+    plt.savefig(os.path.join(app.config['GRAPH_IMAGES_FOLDER'], result_filename))
+    plt.close()
+    return result_filename
+
+@app.route('/plants/<int:plant_id>/zip', methods=['GET', 'POST'])
+@login_required
+def upload_zip(plant_id):
+    plant = load_plant(plant_id)
+    if plant is None:
+        abort(404)
+
+    upload_form = UploadZipForm()
+    phases_list = [(phase.id, phase.name) for phase in plant.phases.order_by("order")]
+    upload_form.phase_id.choices = phases_list
+    if upload_form.validate_on_submit():
+
+        phase = load_phase(upload_form.phase_id.data)
+        if phase is None:
+            flash("Phase not exist!", 'danger')
+            return redirect(url_for('upload_zip', plant_id=plant.id))
+
+        zip_file = upload_form.zip_file.data
+        filename = secure_filename(zip_file.filename)
+
+        newname = create_filename(filename)
+        zip_file.save(os.path.join(app.config['UPLOAD_ZIP_FOLDER'], newname))
+
+        zip_ref = zipfile.ZipFile(os.path.join(app.config['UPLOAD_ZIP_FOLDER'], newname), 'r')
+        zip_ref.extractall(app.config['EXTRACT_ZIP_FOLDER'])
+        zip_ref.close()
+
+        # process images in zip file
+        result_graph = process_multi_images(zip_ref, newname)
+        # end process
+
+        shutil.rmtree(os.path.join(app.config['EXTRACT_ZIP_FOLDER'], get_dir_name(zip_ref)))
+
+        flash('Upload successfully!', 'success')
+        return redirect(url_for('show_graph_result', plant_id=plant.id, result_graph=result_graph))
+
+    return render_template('upload_zip.html', upload_form=upload_form, plant=plant)
+
+@app.route('/plants/<int:plant_id>/zip/results/<result_graph>', methods=['GET'])
+@login_required
+def show_graph_result(plant_id, result_graph):
+    plant = load_plant(plant_id)
+    if plant is None:
+        abort(404)
+    return render_template('show_graph_result.html', plant=plant, result_graph=result_graph)
+
+@app.route('/download_graph/<result_graph>')
+@login_required
+def download_graph(result_graph):
+    return send_from_directory(app.config['DOWNLOAD_IMAGES'], filename=result_graph)

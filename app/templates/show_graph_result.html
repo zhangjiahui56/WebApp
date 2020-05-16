@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% with title="Graph Result" %}
+{% include 'includes/_mini_slide.html' %}
+{% endwith %}
+<div class="container">
+<div class="p-5">
+{% include "/includes/_messages.html" %}
+<main class="main_full">
+    <div class="container" id="graph-results-container">
+        <a href="{{url_for('download_graph', result_graph=result_graph)}}"><img src="{{url_for('static', filename='uploads/graph_images/'+result_graph)}}" style="margin-left: auto;margin-right: auto;display: block;"></a>
+    </div>
+</main>
+</div>
+</div>
+{% endblock %}

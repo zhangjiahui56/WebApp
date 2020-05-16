@@ -18,7 +18,7 @@ login_manager.init_app(app)
 
 # from LeafCounting.model import *
 # model = LeafCountingModel()
-# model.load_weights('./LeafCounting/model_weighs/model_125_ver5.h5')
+# model.load_weights('./LeafCounting/model_weights/model_125_final_backup.h5')
 
 from app import views, models
 

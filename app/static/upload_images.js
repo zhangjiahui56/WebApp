@@ -14,7 +14,7 @@ var btnUpload = $("#upload_file"),
             setTimeout(function(){
                 $("#uploaded_view").append('<img src="'+uploadedFile+'" />').addClass("show");
 
-                $("#form-upload").append('<button type="submit" class="btn btn-primary" style="display: block; margin: 0 auto;font-size: 2rem;background-color:#70c745;border-color:#70c745">Upload</button>');
+                $("#form-upload").append('<button type="submit" class="btn btn-primary" style="display: block; margin: 0 auto;font-size: 2rem;background-color:#70c745;border-color:#70c745;border-radius: 6px;">Upload</button>');
             },3500);
         }
     });

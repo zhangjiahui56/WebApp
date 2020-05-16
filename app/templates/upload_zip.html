@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-{% with title="Process an Image" %}
+{% with title="Process Multiple Images" %}
 {% include 'includes/_mini_slide.html' %}
 {% endwith %}
 <div class="container">
@@ -11,7 +11,7 @@
 {{ render_form_errors(upload_form) }}
 <main class="main_full">
     <div class="container" id="upload-container">
-      <form method="POST" action="{{url_for('upload_file', plant_id=plant.id)}}" enctype="multipart/form-data" id="form-upload">
+      <form method="POST" action="{{url_for('upload_zip', plant_id=plant.id)}}" enctype="multipart/form-data" id="form-upload">
           {{upload_form.csrf_token()}}
         <div class="upload-panel">
 
@@ -23,24 +23,14 @@
                 {{upload_form.phase_id(class="phase_id")}}
               </div>
 
-            <div class="button_outer">
-                <div class="btn_upload">
-<!--                    <input type="file" id="upload_file" name="file">-->
-                    {{upload_form.image(id="upload_file", accept="image/*")}}
-                    Choose Image
-                </div>
-                <div class="processing_bar"></div>
-                <div class="success_box"></div>
+            <div>
+                {{upload_form.zip_file(style="margin : 0 auto;")}}
             </div>
         </div>
-        <div class="error_msg"></div>
-        <div class="uploaded_file_view" id="uploaded_view">
-            <span class="file_remove">X</span>
-        </div>
+            <button type="submit" class="btn btn-primary" style="display: block; margin: 0 auto;font-size: 2rem;background-color:#70c745;border-color:#70c745;border-radius: 6px;">Upload</button>
       </form>
     </div>
 </main>
 </div>
 </div>
-<script src="{{url_for('static', filename='upload_images.js')}}"></script>
 {% endblock %}

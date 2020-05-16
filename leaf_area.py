@@ -5,8 +5,8 @@ from PIL import Image,ImageOps
 # boundaries for green color
 boundaries = [
     # ([33, 80, 40], [100, 255, 255])
-    # ([33, 70, 40], [100, 255, 255])
-    ([33, 50, 50], [90, 255, 255])
+    # ([33, 50, 50], [90, 255, 255])
+    ([50, 50, 50], [90, 255, 255])
 ]
 
 (lower, upper) = boundaries[0]

@@ -105,13 +105,17 @@
           <span aria-hidden="true" id="add-phase_feature-x">×</span>
         </button>
       </div>
+      {% if add_phase_feature_form.feature_id.choices|list|count() != 0 %}
+
       <form action="{{url_for('admin.add_feature2phase', id=phase.id)}}"  method="post" id="add-phase_feature-form">
         {{add_phase_feature_form.csrf_token()}}
       <div class="modal-body">
         <div class="form-group">
             <div>Feature: </div>
 			<div class="input-group">
+
                 {{add_phase_feature_form.feature_id(class_="form-control")}}
+
             </div>
         </div>
 
@@ -121,6 +125,12 @@
         <input class="btn btn-primary" type="submit" value="Save" />
       </div>
       </form>
+
+      {% else %}
+        <div class="modal-body">
+          <p>No feature available</p>
+        </div>
+      {% endif %}
     </div>
     </div>
   </div>
