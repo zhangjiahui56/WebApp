@@ -161,6 +161,9 @@ def calculate_average_length_leaf(np_image, coef_x=1, coef_y=1):
         value, locate = find_extreme(f, idx)
         length_leaves += [length[i] for i in locate]
 
+    if len(length_leaves) == 0:
+        return 0
+
     length_average = sum(length_leaves) / len(length_leaves)
     return length_average
 

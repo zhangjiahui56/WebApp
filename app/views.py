@@ -1,6 +1,6 @@
 from flask import render_template, flash, redirect, session, url_for, request, g, abort, send_from_directory, send_file
 from flask_login import login_user, logout_user, current_user, login_required
-from app import app, db, login_manager
+from app import app, db, login_manager, model
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 import datetime
@@ -11,6 +11,7 @@ import shutil
 from .forms import *
 from .models import User, Plant, Phase, Image
 from leaf_area import calculate_leaf_area
+from length_leaf import calculate_max_length_leaf, calculate_average_length_leaf
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -118,12 +119,6 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
-import numpy as np
-# def leaf_predict(image):
-#     image = preprocess_image(image)
-#     predict = model.predict(np.expand_dims(image, axis=0))
-#     return predict
-
 import random, string
 
 def randomword(length):
@@ -170,34 +165,52 @@ def upload_file(plant_id):
         db.session.add(img)
         db.session.commit()
         flash('Upload successfully!', 'success')
-        return redirect(url_for('upload_file', plant_id=plant.id))
+        return redirect(url_for('show_results', plant_id=plant.id, phase_order=phase.order, filename=newname))
 
     return render_template('upload_images.html', upload_form=upload_form, plant=plant)
 
-@app.route('/images/results', methods=['POST'])
+import numpy as np
+def leaf_predict(np_image):
+    import keras.backend.tensorflow_backend as tb
+    tb._SYMBOLIC_SCOPE.value = True
+    from keras.applications.resnet50 import preprocess_input
 
-def uploaded_file():
-    # check if the post request has the file part
-    if 'file' not in request.files:
-        flash('No file part', 'danger')
-        return redirect(url_for('upload_file'))
-    file = request.files['file']
-    # if user does not select file, browser also
-    # submit an empty part without filename
-    if file.filename == '':
-        flash('No selected file', 'danger')
-        return redirect(url_for('upload_file'))
-    if allowed_file(file.filename) == 0:
-        flash('Invalid file, please choose png, jpg or jpeg file', 'danger')
-        return redirect(url_for('upload_file'))
-    if file:
-        filename = secure_filename(file.filename)
-        # leaf_pred = leaf_predict(file)
-        newname = create_filename(filename)
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], newname))
-        return render_template('results.html', image_link=newname)
+    image = preprocess_input(np_image)
+    predict = model.predict(np.expand_dims(image, axis=0))
+    return predict[0][0]
 
-    return redirect(url_for('upload_file'))
+def calculate_phase_1(filename):
+    from LeafCounting.utils import load_image
+    image = load_image(filename)
+    leaf_count = leaf_predict(image)
+    # leaf_count = 0
+    max_length = calculate_max_length_leaf(image)
+    average_length = calculate_average_length_leaf(image)
+
+    return (leaf_count, max_length, average_length)
+
+
+def calculate_phase_2(filename):
+    area = calculate_leaf_area(filename)
+
+    return area
+
+@app.route('/plants/<int:plant_id>/<int:phase_order>/images/results/<filename>')
+@login_required
+def show_results(plant_id, phase_order, filename):
+    plant = load_plant(plant_id)
+    if plant is None:
+        abort(404)
+
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+
+    if phase_order == 1:
+        leaf_count, max_length, average_length = calculate_phase_1(file_path)
+        return render_template('results.html', plant=plant, phase_order=phase_order, filename=filename, leaf_count=leaf_count, max_length=max_length, average_length=average_length)
+
+    area = calculate_phase_2(file_path)
+    return render_template('results.html', plant=plant, phase_order=phase_order, filename=filename, area=area)
+
 
 @app.route('/profile/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -250,6 +263,12 @@ def change_password(id):
 def choose_plants():
     plants = Plant.query.all()
     return render_template('choose_plants.html', plants=plants)
+
+@app.route('/choose_plants_multiple', methods=['GET'])
+@login_required
+def choose_plants_multiple():
+    plants = Plant.query.all()
+    return render_template('choose_plants_multiple.html', plants=plants)
 
 
 def get_dir_name(zip_ref):

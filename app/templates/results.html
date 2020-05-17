@@ -4,7 +4,7 @@
 <!-- mini slide -->
 <div class="breadcrumb-area">
     <!-- Top Breadcrumb Area -->
-    <div class="top-breadcrumb-area bg-img bg-overlay d-flex align-items-center justify-content-center" style="background-image: url(../static/img/bg-img/24.jpg);">
+    <div class="top-breadcrumb-area bg-img bg-overlay d-flex align-items-center justify-content-center" style="background-image: url({{url_for('static', filename='img/bg-img/24.jpg')}});">
         <h2>Image Results</h2>
     </div>
 
@@ -14,7 +14,8 @@
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{{url_for('index')}}"><i class="fa fa-home"></i> Home</a></li>
-                        <li class="breadcrumb-item active"><a href="{{url_for('upload_file')}}"> Upload Images</a></li>
+                        <li class="breadcrumb-item active"><a href="{{url_for('choose_plants')}}"> Choose Plants</a></li>
+                        <li class="breadcrumb-item active"><a href="{{url_for('upload_file', plant_id=plant.id)}}"> Process Image</a></li>
                         <li class="breadcrumb-item active" aria-current="page"> Image Results</li>
                     </ol>
                 </nav>
@@ -24,7 +25,26 @@
 </div>
 <!-- end mini slide -->
 
-<div class="show_file_view">
-<img src="{{url_for('static', filename='uploads/images/'+image_link)}}" style=" width: 200px; height: 250px;"/>
+
+<div class="container">
+<div class="p-5">
+{% include "/includes/_messages.html" %}
+<main class="main_full">
+    <div class="container" id="graph-results-container">
+        <img src="{{url_for('static', filename='uploads/images/'+filename)}}" style="margin-left: auto;margin-right: auto;display: block;max-width: 300px;padding: 30px;">
+        <div class="form-group" style="text-align: center;">
+            <h1 style="color:#70c745;">Results:</h1>
+            {% if phase_order == 1%}
+                <h3 style="color:#70c745;">Number of Leafs: {{leaf_count | round | int}} ({{leaf_count | round(2)}}) (leafs)</h3>
+                <h3 style="color:#70c745;">Max Length of Leafs: {{max_length | round(2)}} (length of pixel)</h3>
+                <h3 style="color:#70c745;">Average Length of Leafs: {{average_length | round(2)}} (length of pixel)</h3>
+            {% else %}
+                <h3 style="color:#70c745;">Leaf Area: {{(area*100) | round(2)}} (% area of image)</h3>
+            {% endif %}
+        </div>
+    </div>
+</main>
 </div>
+</div>
+
 {% endblock %}

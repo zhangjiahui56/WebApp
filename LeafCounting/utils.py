@@ -95,10 +95,9 @@ def load_image(filename, size=(240, 240)):
     return image
 
 # preprocess input image
-def preprocess_image(filename, size):
+def preprocess_image(np_image):
     from keras.applications.resnet50 import preprocess_input
-    image = load_image(filename, size)
-    image = preprocess_input(image)
+    image = preprocess_input(np_image)
 
     return image
 

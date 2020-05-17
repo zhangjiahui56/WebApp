@@ -1,9 +1,29 @@
 {% extends "base.html" %}
 
 {% block content %}
-{% with title="Graph Result" %}
-{% include 'includes/_mini_slide.html' %}
-{% endwith %}
+<!-- mini slide -->
+<div class="breadcrumb-area">
+    <!-- Top Breadcrumb Area -->
+    <div class="top-breadcrumb-area bg-img bg-overlay d-flex align-items-center justify-content-center" style="background-image: url({{url_for('static', filename='img/bg-img/24.jpg')}});">
+        <h2>Graph Result</h2>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{{url_for('index')}}"><i class="fa fa-home"></i> Home</a></li>
+                        <li class="breadcrumb-item active"><a href="{{url_for('choose_plants_multiple')}}"> Choose Plants</a></li>
+                        <li class="breadcrumb-item active"><a href="{{url_for('upload_zip', plant_id=plant.id)}}"> Process Multiple Images</a></li>
+                        <li class="breadcrumb-item active" aria-current="page"> Image Results</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end mini slide -->
 <div class="container">
 <div class="p-5">
 {% include "/includes/_messages.html" %}
